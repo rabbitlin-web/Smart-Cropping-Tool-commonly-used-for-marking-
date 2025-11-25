@@ -1,0 +1,1 @@
+You can use it for free by opening the web page directly,What it does is upload Grid puzzles, align, split, and batch export footage with one click。: https://rabbitlin-web.github.io/Smart-Cropping-Tool-commonly-used-for-marking-/

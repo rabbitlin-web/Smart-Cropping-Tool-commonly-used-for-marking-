@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RabbitLin 在线智能切图工具(打标常用)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <style>
+        :root { --primary: #ffcc00; --bg: #121212; --panel: #1e1e1e; --text: #e0e0e0; --error-bg: #441818; --error-text: #ff8888; }
+        body { font-family: 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; min-height: 100vh; }
+        .container { background: var(--panel); padding: 30px; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); width: 950px; max-width: 95%; margin-bottom: 40px; }
+        
+        h1 { color: #fff; margin: 0; text-align: center; font-size: 26px; font-weight: 600; }
+        h1 span { color: var(--primary); font-size: 22px; }
+        
+        .desc-box { text-align: center; margin: 15px 0 25px 0; color: #aaa; font-size: 14px; background: #252525; padding: 12px; border-radius: 8px; border-left: 3px solid var(--primary); }
+
+        .tutorial-box { background: #2a2a2a; border-radius: 8px; padding: 15px 20px; margin-bottom: 20px; border: 1px solid #333; }
+        .tutorial-box h3 { margin: 0 0 10px 0; color: #fff; font-size: 15px; }
+        .tutorial-box ol { margin: 0; padding-left: 20px; color: #ccc; font-size: 13px; line-height: 1.6; }
+        .highlight-step { color: var(--primary); font-weight: bold; }
+
+        .controls-wrapper { display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; }
+        .input-panel { flex: 2; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: #2d2d2d; padding: 20px; border-radius: 8px; min-width: 300px; }
+        .export-panel { flex: 1; background: #222; border: 1px solid #444; border-radius: 8px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; min-width: 220px; }
+        
+        label { font-size: 12px; color: #aaa; margin-bottom: 5px; display: block; font-weight: bold; }
+        input[type="number"], select { width: 100%; padding: 10px; background: #333; border: 1px solid #555; color: #fff; border-radius: 4px; font-weight: bold; font-size: 14px; box-sizing: border-box; }
+        input[type="number"]:focus, select:focus { border-color: var(--primary); outline: none; }
+
+        .res-display { font-size: 24px; font-weight: bold; color: #fff; text-align: center; margin: 10px 0; transition: color 0.3s; }
+        .res-display.good { color: #00ff00; text-shadow: 0 0 10px rgba(0,255,0,0.3); }
+
+        .main-btn { width: 100%; margin-top: 10px; padding: 16px; background: linear-gradient(135deg, #ffcc00 0%, #ffaa00 100%); color: #000; border: none; border-radius: 6px; font-weight: bold; font-size: 18px; cursor: pointer; }
+        .main-btn:disabled { background: #444; color: #888; cursor: not-allowed; }
+        
+        /* 新增：红色警告框样式 */
+        .win-warning { 
+            margin-top: 15px; 
+            padding: 15px; 
+            background: var(--error-bg); 
+            border: 1px solid #883333; 
+            border-radius: 6px; 
+            text-align: center; 
+            color: var(--error-text);
+            font-size: 14px;
+            line-height: 1.6;
+            animation: pulse 2s infinite;
+        }
+        .win-warning strong { color: #fff; font-size: 16px; display: block; margin-bottom: 5px; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 100, 100, 0.2); } 70% { box-shadow: 0 0 0 6px rgba(255, 100, 100, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 100, 100, 0); } }
+
+        .upload-area { margin-bottom: 20px; text-align: center; border: 2px dashed #444; padding: 25px; border-radius: 8px; cursor: pointer; transition: 0.2s; background: #252525; }
+        .upload-area:hover { border-color: var(--primary); background: #2a2a2a; }
+        
+        #canvas-container { position: relative; width: 100%; overflow: hidden; border: 2px solid #444; border-radius: 4px; background: #000; margin-top: 20px; min-height: 200px; display: flex; align-items: center; justify-content: center; cursor: crosshair; }
+        canvas { display: block; max-width: 100%; height: auto; touch-action: none; }
+
+        .footer { margin-top: auto; padding-top: 20px; text-align: center; color: #666; font-size: 13px; border-top: 1px solid #333; width: 100%; }
+        .author-tag { color: var(--primary); font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>RabbitLin 在线智能切图工具<span>(打标常用)</span></h1>
+    
+    <div class="desc-box">
+        专为 AI 训练设计。上传 Grid 拼图，一键对齐、切分并批量导出素材。
+    </div>
+
+    <div class="tutorial-box">
+        <h3>📖 使用说明</h3>
+        <ol>
+            <li><strong>上传</strong>：上传 MJ/SD 生成的矩阵图。</li>
+            <li><strong>对齐</strong>：拖动<span class="highlight-step">左上角红框的右下角</span>进行快速对齐，或手动输入间距。</li>
+            <li><strong>导出</strong>：当尺寸显示为绿色 (如 1024x1024) 时，点击黄色按钮下载。</li>
+        </ol>
+    </div>
+
+    <div class="upload-area" onclick="document.getElementById('upload').click()">
+        <input type="file" id="upload" accept="image/*" style="display: none;">
+        <div style="font-size: 18px; margin-bottom: 5px;">📂 <strong>点击上传图片</strong></div>
+        <div id="file-info" style="font-size: 13px; color: #888;">支持 JPG / PNG / WEBP</div>
+    </div>
+
+    <div class="controls-wrapper">
+        <div class="input-panel">
+            <div><label>列数 (Cols)</label><input type="number" id="cols" value="5" min="1"></div>
+            <div><label>行数 (Rows)</label><input type="number" id="rows" value="3" min="1"></div>
+            <div><label>↔️ 水平间距 (px)</label><input type="number" id="gap-x" value="96" min="0"></div>
+            <div><label>↕️ 垂直间距 (px)</label><input type="number" id="gap-y" value="96" min="0"></div>
+        </div>
+
+        <div class="export-panel">
+            <label style="text-align:center;">当前切片尺寸 (预览)</label>
+            <div class="res-display" id="res-display">Waiting</div>
+            
+            <label style="margin-top:15px;">强制缩放输出 (可选)</label>
+            <select id="resize-opt">
+                <option value="original">保持原始大小 (默认)</option>
+                <option value="1024">强制转为 1024x1024</option>
+                <option value="512">强制转为 512x512</option>
+                <option value="768">强制转为 768x768</option>
+            </select>
+        </div>
+    </div>
+
+    <button id="processBtn" class="main-btn" disabled>✅ 确认切分并下载 ZIP</button>
+
+    <div class="win-warning">
+        <strong>⚠️ Windows 用户请注意</strong>
+        如果系统提示“文件可能有害”或报错，这是 Windows 的误报。<br>
+        <span style="color:#fff; font-weight:bold;">请务必使用 7-Zip 或 Bandizip 等第三方软件进行解压！</span><br>
+        (不要使用 Windows 右键菜单自带的“全部解压缩”)
+    </div>
+
+    <div id="canvas-container">
+        <canvas id="previewCanvas"></canvas>
+    </div>
+</div>
+
+<div class="footer">
+    Designed by <span class="author-tag">rabbitlin</span> | WeChat: <span class="author-tag">Aa272123071</span>
+</div>
+
+<script>
+    const elements = {
+        upload: document.getElementById('upload'),
+        cols: document.getElementById('cols'),
+        rows: document.getElementById('rows'),
+        gapX: document.getElementById('gap-x'),
+        gapY: document.getElementById('gap-y'),
+        resizeOpt: document.getElementById('resize-opt'),
+        processBtn: document.getElementById('processBtn'),
+        canvas: document.getElementById('previewCanvas'),
+        fileInfo: document.getElementById('file-info'),
+        resDisplay: document.getElementById('res-display'),
+        canvasContainer: document.getElementById('canvas-container')
+    };
+    const ctx = elements.canvas.getContext('2d');
+
+    let state = {
+        img: new Image(),
+        isLoaded: false,
+        cellW: 0, cellH: 0,
+        isDragging: false,
+        dragStartPos: { x: 0, y: 0 },
+        initialCellSize: { w: 0, h: 0 },
+        scaleFactor: 1
+    };
+
+    [elements.cols, elements.rows, elements.gapX, elements.gapY].forEach(input => {
+        input.addEventListener('input', () => calculateAndDraw(false));
+    });
+
+    elements.upload.addEventListener('change', handleFileUpload);
+    elements.processBtn.addEventListener('click', handleDownload);
+
+    elements.canvas.addEventListener('mousedown', startDrag);
+    elements.canvas.addEventListener('mousemove', handleDragMove);
+    document.addEventListener('mouseup', stopDrag);
+    elements.canvas.addEventListener('touchstart', (e) => startDrag(e.touches[0]));
+    elements.canvas.addEventListener('touchmove', (e) => { e.preventDefault(); handleDragMove(e.touches[0]); });
+    document.addEventListener('touchend', stopDrag);
+
+    function handleFileUpload(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            state.img.onload = () => {
+                state.isLoaded = true;
+                elements.processBtn.disabled = false;
+                elements.fileInfo.innerHTML = `已加载: <span style="color:#ffcc00">${state.img.width} x ${state.img.height}</span> px`;
+                calculateAndDraw(false);
+            }
+            state.img.src = event.target.result;
+        }
+        reader.readAsDataURL(file);
+    }
+
+    function calculateAndDraw(fromDrag) {
+        if (!state.isLoaded) return;
+
+        const cols = parseInt(elements.cols.value) || 1;
+        const rows = parseInt(elements.rows.value) || 1;
+        let gapX = parseInt(elements.gapX.value) || 0;
+        let gapY = parseInt(elements.gapY.value) || 0;
+
+        if (!fromDrag) {
+            state.cellW = Math.floor((state.img.width - (cols - 1) * gapX) / cols);
+            state.cellH = Math.floor((state.img.height - (rows - 1) * gapY) / rows);
+        } else {
+            if (cols > 1) gapX = Math.floor((state.img.width - cols * state.cellW) / (cols - 1));
+            if (rows > 1) gapY = Math.floor((state.img.height - rows * state.cellH) / (rows - 1));
+            gapX = Math.max(0, gapX);
+            gapY = Math.max(0, gapY);
+            elements.gapX.value = gapX;
+            elements.gapY.value = gapY;
+        }
+
+        updateUIDisplay();
+        drawCanvas(cols, rows, gapX, gapY);
+    }
+
+    function updateUIDisplay() {
+        elements.resDisplay.innerText = `${state.cellW} x ${state.cellH}`;
+        const isGoodSize = (state.cellW === 1024 && state.cellH === 1024) || (state.cellW === 512 && state.cellH === 512);
+        elements.resDisplay.classList.toggle('good', isGoodSize);
+    }
+
+    function drawCanvas(cols, rows, gapX, gapY) {
+        elements.canvas.width = state.img.width;
+        elements.canvas.height = state.img.height;
+        state.scaleFactor = elements.canvas.clientWidth / state.img.width;
+
+        ctx.drawImage(state.img, 0, 0);
+        const lineWidth = Math.max(3, state.img.width / 300);
+        ctx.lineWidth = lineWidth;
+
+        for (let y = 0; y < rows; y++) {
+            for (let x = 0; x < cols; x++) {
+                const posX = x * (state.cellW + gapX);
+                const posY = y * (state.cellH + gapY);
+                
+                ctx.strokeStyle = '#ff0000';
+                ctx.strokeRect(posX, posY, state.cellW, state.cellH);
+
+                if (x === 0 && y === 0) {
+                    ctx.fillStyle = '#ffcc00';
+                    const handleSize = lineWidth * 4; 
+                    ctx.fillRect(posX + state.cellW - handleSize, posY + state.cellH - handleSize, handleSize, handleSize);
+                }
+            }
+        }
+    }
+
+    function getMousePosOnImage(clientObj) {
+        const rect = elements.canvas.getBoundingClientRect();
+        return {
+            x: (clientObj.clientX - rect.left) / state.scaleFactor,
+            y: (clientObj.clientY - rect.top) / state.scaleFactor
+        };
+    }
+
+    function startDrag(e) {
+        if (!state.isLoaded) return;
+        const pos = getMousePosOnImage(e);
+        const handleZone = Math.max(40, state.img.width / 30);
+        if (Math.abs(pos.x - state.cellW) < handleZone && Math.abs(pos.y - state.cellH) < handleZone) {
+            state.isDragging = true;
+            state.dragStartPos = pos;
+            state.initialCellSize = { w: state.cellW, h: state.cellH };
+            elements.canvasContainer.style.cursor = 'nwse-resize';
+        }
+    }
+
+    function handleDragMove(e) {
+        if (!state.isDragging) return;
+        const pos = getMousePosOnImage(e);
+        const dx = pos.x - state.dragStartPos.x;
+        const dy = pos.y - state.dragStartPos.y;
+
+        const cols = parseInt(elements.cols.value) || 1;
+        const rows = parseInt(elements.rows.value) || 1;
+        
+        let newW = state.initialCellSize.w + dx;
+        let newH = state.initialCellSize.h + dy;
+        newW = Math.max(50, Math.min(newW, state.img.width / cols));
+        newH = Math.max(50, Math.min(newH, state.img.height / rows));
+        
+        state.cellW = Math.floor(newW);
+        state.cellH = Math.floor(newH);
+        calculateAndDraw(true);
+    }
+
+    function stopDrag() {
+        if (state.isDragging) {
+            state.isDragging = false;
+            elements.canvasContainer.style.cursor = 'crosshair';
+        }
+    }
+
+    async function handleDownload() {
+        if (!state.isLoaded) return;
+        const cols = parseInt(elements.cols.value);
+        const rows = parseInt(elements.rows.value);
+        let gapX = parseInt(elements.gapX.value);
+        let gapY = parseInt(elements.gapY.value);
+        const targetSize = elements.resizeOpt.value;
+
+        const zip = new JSZip();
+        const folder = zip.folder("images");
+        
+        const originalText = elements.processBtn.innerText;
+        elements.processBtn.innerText = "⏳ 编码中...";
+        elements.processBtn.disabled = true;
+
+        const finalCellW = state.cellW;
+        const finalCellH = state.cellH;
+
+        for (let y = 0; y < rows; y++) {
+            for (let x = 0; x < cols; x++) {
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = finalCellW;
+                tempCanvas.height = finalCellH;
+                const tempCtx = tempCanvas.getContext('2d');
+                
+                tempCtx.drawImage(state.img, 
+                    x * (finalCellW + gapX), y * (finalCellH + gapY), finalCellW, finalCellH, 
+                    0, 0, finalCellW, finalCellH
+                );
+
+                let finalCanvas = tempCanvas;
+                if (targetSize !== 'original') {
+                    const size = parseInt(targetSize);
+                    const resizeCanvas = document.createElement('canvas');
+                    resizeCanvas.width = size;
+                    resizeCanvas.height = size;
+                    const resizeCtx = resizeCanvas.getContext('2d');
+                    resizeCtx.imageSmoothingEnabled = true;
+                    resizeCtx.imageSmoothingQuality = 'high';
+                    resizeCtx.drawImage(tempCanvas, 0, 0, size, size);
+                    finalCanvas = resizeCanvas;
+                }
+
+                const dataUrl = finalCanvas.toDataURL('image/png');
+                const base64Data = dataUrl.replace(/^data:image\/(png|jpg);base64,/, "");
+                folder.file(`image_${y}_${x}.png`, base64Data, {base64: true});
+            }
+        }
+
+        zip.generateAsync({type:"blob"}).then(function(content) {
+            saveAs(content, "dataset.zip");
+            elements.processBtn.innerText = originalText;
+            elements.processBtn.disabled = false;
+        });
+    }
+</script>
+</body>
+</html>

@@ -3,12 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RabbitLin 在线智能切图工具(打标常用)</title>
+    
+    <title>RabbitLin 在线智能切图工具 - 免费AI绘图/LoRA训练素材处理神器</title>
+    
+    <meta name="description" content="RabbitLin推出的一款免费在线智能切图工具，专为Stable Diffusion和Midjourney用户设计。支持Grid拼图自动对齐、一键切分、批量导出素材。无需安装，打开网页即用，解决LoRA打标切图难题。">
+    
+    <meta name="keywords" content="RabbitLin, AI切图, 在线切图工具, Midjourney切图, Stable Diffusion打标, LoRA训练素材, 图片九宫格切分, grid splitter, image slicer, 免费工具">
+    
+    <meta name="author" content="RabbitLin">
+
+    <meta property="og:title" content="RabbitLin 智能切图工具 - AI素材处理神器">
+    <meta property="og:description" content="LoRA训练必备！自动对齐、批量切分、一键打包。完全免费，Windows/Mac通用，解决解压报错问题。">
+    <meta property="og:type" content="website">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    
     <style>
         :root { --primary: #ffcc00; --bg: #121212; --panel: #1e1e1e; --text: #e0e0e0; --error-bg: #441818; --error-text: #ff8888; }
-        body { font-family: 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; min-height: 100vh; }
+        body { font-family: 'Segoe UI', Roboto, "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; min-height: 100vh; }
         .container { background: var(--panel); padding: 30px; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); width: 950px; max-width: 95%; margin-bottom: 40px; }
         
         h1 { color: #fff; margin: 0; text-align: center; font-size: 26px; font-weight: 600; }
@@ -35,7 +47,7 @@
         .main-btn { width: 100%; margin-top: 10px; padding: 16px; background: linear-gradient(135deg, #ffcc00 0%, #ffaa00 100%); color: #000; border: none; border-radius: 6px; font-weight: bold; font-size: 18px; cursor: pointer; }
         .main-btn:disabled { background: #444; color: #888; cursor: not-allowed; }
         
-        /* 新增：红色警告框样式 */
+        /* 红色警告框 */
         .win-warning { 
             margin-top: 15px; 
             padding: 15px; 

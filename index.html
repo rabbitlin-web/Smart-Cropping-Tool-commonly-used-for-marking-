@@ -4,70 +4,84 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>RabbitLin 在线智能切图工具 - 免费AI绘图/LoRA训练素材处理神器</title>
-    
-    <meta name="description" content="RabbitLin推出的一款免费在线智能切图工具，专为Stable Diffusion和Midjourney用户设计。支持Grid拼图自动对齐、一键切分、批量导出素材。无需安装，打开网页即用，解决LoRA打标切图难题。">
-    
-    <meta name="keywords" content="RabbitLin, AI切图, 在线切图工具, Midjourney切图, Stable Diffusion打标, LoRA训练素材, 图片九宫格切分, grid splitter, image slicer, 免费工具">
-    
+    <title>RabbitLin Smart Slicer - AI Training Data Tool / 在线智能切图工具(打标常用)</title>
+    <meta name="description" content="RabbitLin V11.0: Professional AI image slicer for Stable Diffusion & Midjourney. Auto-align, smart rescale, and batch export. 专为AI训练设计的智能切图工具，支持自动对齐、智能缩放重构、批量导出。">
+    <meta name="keywords" content="RabbitLin, AI Slicer, LoRA Dataset, Image Splitter, AI切图, 打标工具, 去水印">
     <meta name="author" content="RabbitLin">
 
-    <meta property="og:title" content="RabbitLin 智能切图工具 - AI素材处理神器">
-    <meta property="og:description" content="LoRA训练必备！自动对齐、批量切分、一键打包。完全免费，Windows/Mac通用，解决解压报错问题。">
-    <meta property="og:type" content="website">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     
     <style>
-        :root { --primary: #ffcc00; --bg: #121212; --panel: #1e1e1e; --text: #e0e0e0; --error-bg: #441818; --error-text: #ff8888; }
+        :root { --primary: #ffcc00; --bg: #121212; --panel: #1e1e1e; --text: #e0e0e0; --accent: #2d2d2d; --wechat: #09bb07; }
         body { font-family: 'Segoe UI', Roboto, "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; min-height: 100vh; }
-        .container { background: var(--panel); padding: 30px; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); width: 950px; max-width: 95%; margin-bottom: 40px; }
+        .container { background: var(--panel); padding: 30px; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.6); width: 1100px; max-width: 98%; margin-bottom: 40px; position: relative; }
         
-        h1 { color: #fff; margin: 0; text-align: center; font-size: 26px; font-weight: 600; }
+        /* Header */
+        h1 { color: #fff; margin: 0; text-align: center; font-size: 26px; font-weight: 600; margin-bottom: 10px; }
         h1 span { color: var(--primary); font-size: 22px; }
-        
-        .desc-box { text-align: center; margin: 15px 0 25px 0; color: #aaa; font-size: 14px; background: #252525; padding: 12px; border-radius: 8px; border-left: 3px solid var(--primary); }
+        .subtitle { text-align: center; color: #888; font-size: 14px; margin-bottom: 20px; }
 
-        .tutorial-box { background: #2a2a2a; border-radius: 8px; padding: 15px 20px; margin-bottom: 20px; border: 1px solid #333; }
-        .tutorial-box h3 { margin: 0 0 10px 0; color: #fff; font-size: 15px; }
-        .tutorial-box ol { margin: 0; padding-left: 20px; color: #ccc; font-size: 13px; line-height: 1.6; }
-        .highlight-step { color: var(--primary); font-weight: bold; }
-
-        .controls-wrapper { display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; }
-        .input-panel { flex: 2; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: #2d2d2d; padding: 20px; border-radius: 8px; min-width: 300px; }
-        .export-panel { flex: 1; background: #222; border: 1px solid #444; border-radius: 8px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; min-width: 220px; }
+        /* Social & Support Bar / 社交互动栏 */
+        .social-bar { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
+        .social-btn { display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 50px; text-decoration: none; font-size: 13px; font-weight: bold; transition: transform 0.2s; cursor: pointer; border: none; }
+        .social-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
         
+        .btn-github { background: #333; color: #fff; border: 1px solid #555; }
+        .btn-github span { color: var(--primary); }
+        
+        .btn-wechat { background: var(--wechat); color: #fff; }
+
+        /* Help Box */
+        .help-box { background: #252525; border-left: 4px solid var(--primary); padding: 15px 20px; margin-bottom: 25px; border-radius: 4px; font-size: 13px; color: #ccc; line-height: 1.6; }
+        .tag { display: inline-block; background: var(--primary); color: #000; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-right: 5px; }
+
+        /* Layout */
+        .main-layout { display: flex; gap: 25px; flex-wrap: wrap; }
+        .left-col { flex: 2; min-width: 300px; }
+        .right-col { flex: 1; min-width: 250px; display: flex; flex-direction: column; gap: 15px; }
+
+        /* Panel */
+        .panel { background: var(--accent); padding: 20px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #333; }
+        .panel-title { font-size: 14px; font-weight: bold; color: #fff; margin-bottom: 15px; border-bottom: 1px solid #444; padding-bottom: 8px; display: flex; justify-content: space-between; }
+        
+        /* Inputs */
+        .control-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         label { font-size: 12px; color: #aaa; margin-bottom: 5px; display: block; font-weight: bold; }
         input[type="number"], select { width: 100%; padding: 10px; background: #333; border: 1px solid #555; color: #fff; border-radius: 4px; font-weight: bold; font-size: 14px; box-sizing: border-box; }
         input[type="number"]:focus, select:focus { border-color: var(--primary); outline: none; }
 
-        .res-display { font-size: 24px; font-weight: bold; color: #fff; text-align: center; margin: 10px 0; transition: color 0.3s; }
-        .res-display.good { color: #00ff00; text-shadow: 0 0 10px rgba(0,255,0,0.3); }
+        /* Sliders */
+        .slider-group { margin-bottom: 15px; }
+        input[type=range] { width: 100%; accent-color: var(--primary); margin-top: 5px; }
+        .range-value { float: right; color: var(--primary); font-weight: bold; }
 
-        .main-btn { width: 100%; margin-top: 10px; padding: 16px; background: linear-gradient(135deg, #ffcc00 0%, #ffaa00 100%); color: #000; border: none; border-radius: 6px; font-weight: bold; font-size: 18px; cursor: pointer; }
+        /* Main Button */
+        .main-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #ffcc00 0%, #ffaa00 100%); color: #000; border: none; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.2s; }
+        .main-btn:hover { filter: brightness(1.1); }
         .main-btn:disabled { background: #444; color: #888; cursor: not-allowed; }
-        
-        /* 红色警告框 */
-        .win-warning { 
-            margin-top: 15px; 
-            padding: 15px; 
-            background: var(--error-bg); 
-            border: 1px solid #883333; 
-            border-radius: 6px; 
-            text-align: center; 
-            color: var(--error-text);
-            font-size: 14px;
-            line-height: 1.6;
-            animation: pulse 2s infinite;
-        }
-        .win-warning strong { color: #fff; font-size: 16px; display: block; margin-bottom: 5px; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 100, 100, 0.2); } 70% { box-shadow: 0 0 0 6px rgba(255, 100, 100, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 100, 100, 0); } }
 
-        .upload-area { margin-bottom: 20px; text-align: center; border: 2px dashed #444; padding: 25px; border-radius: 8px; cursor: pointer; transition: 0.2s; background: #252525; }
+        /* Upload */
+        .upload-area { text-align: center; border: 2px dashed #555; padding: 20px; border-radius: 8px; cursor: pointer; transition: 0.2s; background: #222; margin-bottom: 20px; }
         .upload-area:hover { border-color: var(--primary); background: #2a2a2a; }
-        
-        #canvas-container { position: relative; width: 100%; overflow: hidden; border: 2px solid #444; border-radius: 4px; background: #000; margin-top: 20px; min-height: 200px; display: flex; align-items: center; justify-content: center; cursor: crosshair; }
-        canvas { display: block; max-width: 100%; height: auto; touch-action: none; }
+
+        /* Previews */
+        #canvas-container { position: relative; width: 100%; overflow: hidden; border: 2px solid #444; border-radius: 4px; background: #000; min-height: 200px; display: flex; align-items: center; justify-content: center; cursor: crosshair; }
+        canvas { display: block; max-width: 100%; height: auto; }
+        .single-preview-box { background: #000; border: 1px solid #555; border-radius: 4px; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 200px; position: relative; }
+        .single-preview-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .preview-label { position: absolute; top: 5px; left: 5px; font-size: 12px; color: rgba(255,255,255,0.7); background: rgba(0,0,0,0.6); padding: 2px 5px; border-radius: 3px; }
+
+        .win-warning { margin-top: 15px; padding: 12px; background: #441818; border: 1px solid #883333; border-radius: 6px; text-align: center; color: #ff8888; font-size: 13px; display: none; }
+
+        /* Modal (Popup) */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 999; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal-box { background: #fff; padding: 20px; border-radius: 12px; text-align: center; max-width: 90%; width: 350px; position: relative; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .modal-box img { width: 100%; border-radius: 8px; }
+        .modal-close { position: absolute; top: 10px; right: 15px; font-size: 24px; color: #333; cursor: pointer; font-weight: bold; }
+        .modal-text { color: #333; margin-top: 10px; font-weight: bold; font-size: 16px; }
+        .modal-sub { color: #666; font-size: 13px; margin-bottom: 10px; }
+        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
         .footer { margin-top: auto; padding-top: 20px; text-align: center; color: #666; font-size: 13px; border-top: 1px solid #333; width: 100%; }
         .author-tag { color: var(--primary); font-weight: bold; }
@@ -76,280 +90,286 @@
 <body>
 
 <div class="container">
-    <h1>RabbitLin 在线智能切图工具<span>(打标常用)</span></h1>
-    
-    <div class="desc-box">
-        专为 AI 训练设计。上传 Grid 拼图，一键对齐、切分并批量导出素材。
+    <h1>RabbitLin Smart Slicer <span>V11.0</span></h1>
+    <div class="subtitle">在线智能切图工具 (打标常用)</div>
+
+    <div class="social-bar">
+        <a href="https://github.com/rabbitlin-web/Smart-Cropping-Tool-commonly-used-for-marking-" target="_blank" class="social-btn btn-github">
+            <svg height="16" width="16" viewBox="0 0 16 16" fill="#ffffff"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
+            Github 求 Star (✧ω✧)
+        </a>
+        
+        <button class="social-btn btn-wechat" onclick="openModal()">
+            🥤 投喂兔子 / Buy me a milk tea
+        </button>
     </div>
 
-    <div class="tutorial-box">
-        <h3>📖 使用说明</h3>
-        <ol>
-            <li><strong>上传</strong>：上传 MJ/SD 生成的矩阵图。</li>
-            <li><strong>对齐</strong>：拖动<span class="highlight-step">左上角红框的右下角</span>进行快速对齐，或手动输入间距。</li>
-            <li><strong>导出</strong>：当尺寸显示为绿色 (如 1024x1024) 时，点击黄色按钮下载。</li>
-        </ol>
+    <div class="help-box">
+        <div style="margin-bottom:8px;"><span class="tag">Basic / 基础</span> Upload Grid images, auto-align and split. / 上传 Grid 拼图，自动对齐切分。</div>
+        <div><span class="tag">V11 Feature</span> <strong>Smart Re-composition / 智能重构</strong>: Fix offset issues in Banana Pro images. Use Anchor & Scale to adjust composition. / 修复构图偏移，使用锚点和缩放重新构图。</div>
     </div>
 
     <div class="upload-area" onclick="document.getElementById('upload').click()">
         <input type="file" id="upload" accept="image/*" style="display: none;">
-        <div style="font-size: 18px; margin-bottom: 5px;">📂 <strong>点击上传图片</strong></div>
-        <div id="file-info" style="font-size: 13px; color: #888;">支持 JPG / PNG / WEBP</div>
+        <div style="font-size: 18px; margin-bottom: 5px;">📂 <strong>Click to Upload / 点击上传图片</strong></div>
+        <div id="file-info" style="font-size: 13px; color: #888;">Support JPG / PNG / WEBP</div>
     </div>
 
-    <div class="controls-wrapper">
-        <div class="input-panel">
-            <div><label>列数 (Cols)</label><input type="number" id="cols" value="5" min="1"></div>
-            <div><label>行数 (Rows)</label><input type="number" id="rows" value="3" min="1"></div>
-            <div><label>↔️ 水平间距 (px)</label><input type="number" id="gap-x" value="96" min="0"></div>
-            <div><label>↕️ 垂直间距 (px)</label><input type="number" id="gap-y" value="96" min="0"></div>
-        </div>
+    <div class="main-layout">
+        <div class="left-col">
+            <div class="panel">
+                <div class="panel-title">1. Grid Structure / 切割结构</div>
+                <div class="control-grid">
+                    <div><label>Columns / 列数</label><input type="number" id="cols" value="5" min="1"></div>
+                    <div><label>Rows / 行数</label><input type="number" id="rows" value="3" min="1"></div>
+                    <div><label>↔️ H-Gap / 水平间距 (px)</label><input type="number" id="gap-x" value="96" min="0"></div>
+                    <div><label>↕️ V-Gap / 垂直间距 (px)</label><input type="number" id="gap-y" value="96" min="0"></div>
+                </div>
+            </div>
 
-        <div class="export-panel">
-            <label style="text-align:center;">当前切片尺寸 (预览)</label>
-            <div class="res-display" id="res-display">Waiting</div>
+            <div class="panel" style="border-color: #554400; background: #26241a;">
+                <div class="panel-title" style="color:#ffcc00;">2. Smart Re-composition / 智能重构</div>
+                
+                <div class="slider-group">
+                    <label>Content Scale / 内容缩放: <span id="scale-val" class="range-value">100%</span></label>
+                    <input type="range" id="content-scale" min="50" max="150" value="100" step="1">
+                    <div style="font-size:11px; color:#777; margin-top:2px;">
+                        < 100%: Shrink (Add Borders) | > 100%: Zoom (Crop Edges)
+                    </div>
+                </div>
+
+                <div class="control-grid">
+                    <div>
+                        <label>Anchor / 对齐锚点</label>
+                        <select id="anchor-pos">
+                            <option value="center">Center / 居中 (Default)</option>
+                            <option value="top">Top / 顶端对齐</option>
+                            <option value="bottom">Bottom / 底端对齐</option>
+                            <option value="left">Left / 左侧对齐</option>
+                            <option value="right">Right / 右侧对齐</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Output Size / 输出尺寸</label>
+                        <select id="resize-opt">
+                            <option value="original">Original / 原始大小</option>
+                            <option value="1024">Force 1024x1024</option>
+                            <option value="512">Force 512x512</option>
+                            <option value="768">Force 768x768</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
             
-            <label style="margin-top:15px;">强制缩放输出 (可选)</label>
-            <select id="resize-opt">
-                <option value="original">保持原始大小 (默认)</option>
-                <option value="1024">强制转为 1024x1024</option>
-                <option value="512">强制转为 512x512</option>
-                <option value="768">强制转为 768x768</option>
-            </select>
+            <button id="processBtn" class="main-btn" disabled>✅ Confirm & Download / 确认下载 ZIP</button>
+            <div class="win-warning" id="win-alert">
+                ⚠️ <strong>Windows Users:</strong> Please use 7-Zip or Bandizip to extract. / 请使用 7-Zip 或 Bandizip 解压，避免报错。
+            </div>
         </div>
-    </div>
 
-    <button id="processBtn" class="main-btn" disabled>✅ 确认切分并下载 ZIP</button>
+        <div class="right-col">
+            <div class="panel" style="padding:10px; margin:0;">
+                <div class="panel-title" style="border:none; margin-bottom:5px;">Single Preview / 单图预览</div>
+                <div class="single-preview-box">
+                    <span class="preview-label">Image 1 Preview</span>
+                    <img id="single-preview-img" alt="Waiting...">
+                </div>
+                <div style="text-align:center; margin-top:5px; font-size:12px; color:#888;">
+                    Final Size: <span id="final-res" style="color:#ffcc00;">-- x --</span>
+                </div>
+            </div>
 
-    <div class="win-warning">
-        <strong>⚠️ Windows 用户请注意</strong>
-        如果系统提示“文件可能有害”或报错，这是 Windows 的误报。<br>
-        <span style="color:#fff; font-weight:bold;">请务必使用 7-Zip 或 Bandizip 等第三方软件进行解压！</span><br>
-        (不要使用 Windows 右键菜单自带的“全部解压缩”)
-    </div>
-
-    <div id="canvas-container">
-        <canvas id="previewCanvas"></canvas>
+            <div class="panel" style="padding:10px; flex:1; display:flex; flex-direction:column;">
+                <div class="panel-title" style="border:none; margin-bottom:5px;">Alignment / 整体对齐</div>
+                <div style="font-size:11px; color:#666; margin-bottom:5px;">Drag top-left box to adjust / 拖动左上角红框微调</div>
+                <div id="canvas-container" style="flex:1;">
+                    <canvas id="previewCanvas"></canvas>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 <div class="footer">
-    Designed by <span class="author-tag">rabbitlin</span> | WeChat: <span class="author-tag">Aa272123071</span>
+    Designed by <span class="author-tag">RabbitLin</span> | WeChat: <span class="author-tag">Aa272123071</span>
+</div>
+
+<div id="qrModal" class="modal-overlay" onclick="closeModal(event)">
+    <div class="modal-box">
+        <div class="modal-close" onclick="closeModalBtn()">×</div>
+        <div class="modal-text">🥤 Buy me a Milk Tea ~</div>
+        <div class="modal-sub">既然好用，就请兔子喝杯茶吧 (开心)</div>
+        <img src="pay.jpg" alt="WeChat Pay QR Code" onerror="this.src='https://via.placeholder.com/300?text=Please+Upload+pay.jpg';">
+        <div style="margin-top:10px; font-size:12px; color:#999;">WeChat Pay / 微信支付</div>
+    </div>
 </div>
 
 <script>
-    const elements = {
+    // --- Logic for Modal ---
+    function openModal() { document.getElementById('qrModal').style.display = 'flex'; }
+    function closeModalBtn() { document.getElementById('qrModal').style.display = 'none'; }
+    function closeModal(e) { if (e.target.id === 'qrModal') closeModalBtn(); }
+
+    // --- Core Tool Logic ---
+    const el = {
         upload: document.getElementById('upload'),
-        cols: document.getElementById('cols'),
-        rows: document.getElementById('rows'),
-        gapX: document.getElementById('gap-x'),
-        gapY: document.getElementById('gap-y'),
-        resizeOpt: document.getElementById('resize-opt'),
-        processBtn: document.getElementById('processBtn'),
-        canvas: document.getElementById('previewCanvas'),
-        fileInfo: document.getElementById('file-info'),
-        resDisplay: document.getElementById('res-display'),
-        canvasContainer: document.getElementById('canvas-container')
+        cols: document.getElementById('cols'), rows: document.getElementById('rows'),
+        gapX: document.getElementById('gap-x'), gapY: document.getElementById('gap-y'),
+        contentScale: document.getElementById('content-scale'), scaleVal: document.getElementById('scale-val'),
+        anchorPos: document.getElementById('anchor-pos'), resizeOpt: document.getElementById('resize-opt'),
+        processBtn: document.getElementById('processBtn'), canvas: document.getElementById('previewCanvas'),
+        singlePreview: document.getElementById('single-preview-img'), finalRes: document.getElementById('final-res'),
+        fileInfo: document.getElementById('file-info'), winAlert: document.getElementById('win-alert')
     };
-    const ctx = elements.canvas.getContext('2d');
+    const ctx = el.canvas.getContext('2d');
+    let state = { img: new Image(), isLoaded: false, cellW: 0, cellH: 0, isDragging: false, dragStartPos: {x:0,y:0}, initialCellSize: {w:0,h:0}, scaleFactor: 1 };
 
-    let state = {
-        img: new Image(),
-        isLoaded: false,
-        cellW: 0, cellH: 0,
-        isDragging: false,
-        dragStartPos: { x: 0, y: 0 },
-        initialCellSize: { w: 0, h: 0 },
-        scaleFactor: 1
-    };
+    const inputs = [el.cols, el.rows, el.gapX, el.gapY, el.contentScale, el.anchorPos, el.resizeOpt];
+    inputs.forEach(input => input.addEventListener('input', () => {
+        el.scaleVal.innerText = el.contentScale.value + '%';
+        updateCalculation(false);
+    }));
 
-    [elements.cols, elements.rows, elements.gapX, elements.gapY].forEach(input => {
-        input.addEventListener('input', () => calculateAndDraw(false));
-    });
-
-    elements.upload.addEventListener('change', handleFileUpload);
-    elements.processBtn.addEventListener('click', handleDownload);
-
-    elements.canvas.addEventListener('mousedown', startDrag);
-    elements.canvas.addEventListener('mousemove', handleDragMove);
-    document.addEventListener('mouseup', stopDrag);
-    elements.canvas.addEventListener('touchstart', (e) => startDrag(e.touches[0]));
-    elements.canvas.addEventListener('touchmove', (e) => { e.preventDefault(); handleDragMove(e.touches[0]); });
-    document.addEventListener('touchend', stopDrag);
-
-    function handleFileUpload(e) {
+    el.upload.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (!file) return;
         const reader = new FileReader();
         reader.onload = (event) => {
             state.img.onload = () => {
                 state.isLoaded = true;
-                elements.processBtn.disabled = false;
-                elements.fileInfo.innerHTML = `已加载: <span style="color:#ffcc00">${state.img.width} x ${state.img.height}</span> px`;
-                calculateAndDraw(false);
+                el.processBtn.disabled = false;
+                el.winAlert.style.display = 'block';
+                el.fileInfo.innerHTML = `Loaded: <span style="color:#ffcc00">${state.img.width} x ${state.img.height}</span> px`;
+                updateCalculation(false);
             }
             state.img.src = event.target.result;
         }
         reader.readAsDataURL(file);
-    }
+    });
 
-    function calculateAndDraw(fromDrag) {
+    el.processBtn.addEventListener('click', async () => {
         if (!state.isLoaded) return;
+        const cols = parseInt(el.cols.value), rows = parseInt(el.rows.value);
+        let gapX = parseInt(el.gapX.value), gapY = parseInt(el.gapY.value);
+        const zip = new JSZip();
+        const folder = zip.folder("RabbitLin_Smart_Crops");
+        const originalText = el.processBtn.innerText;
+        el.processBtn.innerText = "⏳ Processing / 处理中...";
+        el.processBtn.disabled = true;
 
-        const cols = parseInt(elements.cols.value) || 1;
-        const rows = parseInt(elements.rows.value) || 1;
-        let gapX = parseInt(elements.gapX.value) || 0;
-        let gapY = parseInt(elements.gapY.value) || 0;
+        const rawW = state.cellW, rawH = state.cellH;
+        const scale = parseInt(el.contentScale.value) / 100;
+        const anchor = el.anchorPos.value;
+        const resizeTarget = el.resizeOpt.value;
+        let targetW = rawW, targetH = rawH;
+        if (resizeTarget !== 'original') { targetW = parseInt(resizeTarget); targetH = parseInt(resizeTarget); }
 
+        for (let y = 0; y < rows; y++) {
+            for (let x = 0; x < cols; x++) {
+                const pCanvas = document.createElement('canvas');
+                pCanvas.width = targetW; pCanvas.height = targetH;
+                const pCtx = pCanvas.getContext('2d');
+                pCtx.fillStyle = '#000'; pCtx.fillRect(0, 0, targetW, targetH);
+                pCtx.imageSmoothingEnabled = true; pCtx.imageSmoothingQuality = 'high';
+                
+                const srcX = x * (rawW + gapX), srcY = y * (rawH + gapY);
+                const drawW = targetW * scale, drawH = targetH * scale;
+                let drawX = (targetW - drawW)/2, drawY = (targetH - drawH)/2;
+                
+                if (anchor === 'left') drawX = 0; else if (anchor === 'right') drawX = targetW - drawW;
+                if (anchor === 'top') drawY = 0; else if (anchor === 'bottom') drawY = targetH - drawH;
+
+                pCtx.drawImage(state.img, srcX, srcY, rawW, rawH, drawX, drawY, drawW, drawH);
+                const dataUrl = pCanvas.toDataURL('image/png');
+                folder.file(`crop_${y}_${x}.png`, dataUrl.replace(/^data:image\/(png|jpg);base64,/, ""), {base64: true});
+            }
+        }
+        zip.generateAsync({type:"blob"}).then((content) => {
+            saveAs(content, "smart_dataset.zip");
+            el.processBtn.innerText = originalText;
+            el.processBtn.disabled = false;
+        });
+    });
+
+    function updateCalculation(fromDrag) {
+        if (!state.isLoaded) return;
+        const cols = parseInt(el.cols.value) || 1, rows = parseInt(el.rows.value) || 1;
+        let gapX = parseInt(el.gapX.value) || 0, gapY = parseInt(el.gapY.value) || 0;
+        
         if (!fromDrag) {
             state.cellW = Math.floor((state.img.width - (cols - 1) * gapX) / cols);
             state.cellH = Math.floor((state.img.height - (rows - 1) * gapY) / rows);
         } else {
             if (cols > 1) gapX = Math.floor((state.img.width - cols * state.cellW) / (cols - 1));
             if (rows > 1) gapY = Math.floor((state.img.height - rows * state.cellH) / (rows - 1));
-            gapX = Math.max(0, gapX);
-            gapY = Math.max(0, gapY);
-            elements.gapX.value = gapX;
-            elements.gapY.value = gapY;
+            gapX = Math.max(0, gapX); gapY = Math.max(0, gapY);
+            el.gapX.value = gapX; el.gapY.value = gapY;
         }
-
-        updateUIDisplay();
-        drawCanvas(cols, rows, gapX, gapY);
+        drawGridPreview(cols, rows, gapX, gapY);
+        updateSinglePreview(0, 0, gapX, gapY);
     }
 
-    function updateUIDisplay() {
-        elements.resDisplay.innerText = `${state.cellW} x ${state.cellH}`;
-        const isGoodSize = (state.cellW === 1024 && state.cellH === 1024) || (state.cellW === 512 && state.cellH === 512);
-        elements.resDisplay.classList.toggle('good', isGoodSize);
-    }
-
-    function drawCanvas(cols, rows, gapX, gapY) {
-        elements.canvas.width = state.img.width;
-        elements.canvas.height = state.img.height;
-        state.scaleFactor = elements.canvas.clientWidth / state.img.width;
-
+    function drawGridPreview(cols, rows, gapX, gapY) {
+        el.canvas.width = state.img.width; el.canvas.height = state.img.height;
+        state.scaleFactor = el.canvas.clientWidth / state.img.width;
         ctx.drawImage(state.img, 0, 0);
         const lineWidth = Math.max(3, state.img.width / 300);
         ctx.lineWidth = lineWidth;
-
         for (let y = 0; y < rows; y++) {
             for (let x = 0; x < cols; x++) {
-                const posX = x * (state.cellW + gapX);
-                const posY = y * (state.cellH + gapY);
-                
-                ctx.strokeStyle = '#ff0000';
-                ctx.strokeRect(posX, posY, state.cellW, state.cellH);
-
+                const posX = x * (state.cellW + gapX), posY = y * (state.cellH + gapY);
+                ctx.strokeStyle = '#ff0000'; ctx.strokeRect(posX, posY, state.cellW, state.cellH);
                 if (x === 0 && y === 0) {
-                    ctx.fillStyle = '#ffcc00';
-                    const handleSize = lineWidth * 4; 
-                    ctx.fillRect(posX + state.cellW - handleSize, posY + state.cellH - handleSize, handleSize, handleSize);
+                    ctx.fillStyle = '#ffcc00'; const h = lineWidth * 4;
+                    ctx.fillRect(posX + state.cellW - h, posY + state.cellH - h, h, h);
                 }
             }
         }
     }
 
-    function getMousePosOnImage(clientObj) {
-        const rect = elements.canvas.getBoundingClientRect();
-        return {
-            x: (clientObj.clientX - rect.left) / state.scaleFactor,
-            y: (clientObj.clientY - rect.top) / state.scaleFactor
-        };
+    function updateSinglePreview(x, y, gapX, gapY) {
+        const rawW = state.cellW, rawH = state.cellH;
+        const scale = parseInt(el.contentScale.value) / 100;
+        const anchor = el.anchorPos.value;
+        const resizeTarget = el.resizeOpt.value;
+        let targetW = rawW, targetH = rawH;
+        if (resizeTarget !== 'original') { targetW = parseInt(resizeTarget); targetH = parseInt(resizeTarget); }
+        
+        el.finalRes.innerText = `${targetW} x ${targetH}`;
+        const pCanvas = document.createElement('canvas');
+        pCanvas.width = targetW; pCanvas.height = targetH;
+        const pCtx = pCanvas.getContext('2d');
+        pCtx.fillStyle = '#000'; pCtx.fillRect(0, 0, targetW, targetH);
+        pCtx.imageSmoothingEnabled = true; pCtx.imageSmoothingQuality = 'high';
+
+        const drawW = targetW * scale, drawH = targetH * scale;
+        let drawX = (targetW-drawW)/2, drawY = (targetH-drawH)/2;
+        if (anchor === 'left') drawX = 0; else if (anchor === 'right') drawX = targetW - drawW;
+        if (anchor === 'top') drawY = 0; else if (anchor === 'bottom') drawY = targetH - drawH;
+
+        pCtx.drawImage(state.img, x*(rawW+gapX), y*(rawH+gapY), rawW, rawH, drawX, drawY, drawW, drawH);
+        el.singlePreview.src = pCanvas.toDataURL();
     }
 
-    function startDrag(e) {
+    // Drag
+    function getPos(e) { const r = el.canvas.getBoundingClientRect(); return { x: (e.clientX - r.left)/state.scaleFactor, y: (e.clientY - r.top)/state.scaleFactor }; }
+    el.canvas.addEventListener('mousedown', (e) => {
         if (!state.isLoaded) return;
-        const pos = getMousePosOnImage(e);
-        const handleZone = Math.max(40, state.img.width / 30);
-        if (Math.abs(pos.x - state.cellW) < handleZone && Math.abs(pos.y - state.cellH) < handleZone) {
-            state.isDragging = true;
-            state.dragStartPos = pos;
-            state.initialCellSize = { w: state.cellW, h: state.cellH };
-            elements.canvasContainer.style.cursor = 'nwse-resize';
+        const p = getPos(e), z = Math.max(40, state.img.width/30);
+        if (Math.abs(p.x - state.cellW) < z && Math.abs(p.y - state.cellH) < z) {
+            state.isDragging = true; state.dragStartPos = p; state.initialCellSize = { w: state.cellW, h: state.cellH };
+            el.canvas.style.cursor = 'nwse-resize';
         }
-    }
-
-    function handleDragMove(e) {
+    });
+    el.canvas.addEventListener('mousemove', (e) => {
         if (!state.isDragging) return;
-        const pos = getMousePosOnImage(e);
-        const dx = pos.x - state.dragStartPos.x;
-        const dy = pos.y - state.dragStartPos.y;
-
-        const cols = parseInt(elements.cols.value) || 1;
-        const rows = parseInt(elements.rows.value) || 1;
-        
-        let newW = state.initialCellSize.w + dx;
-        let newH = state.initialCellSize.h + dy;
-        newW = Math.max(50, Math.min(newW, state.img.width / cols));
-        newH = Math.max(50, Math.min(newH, state.img.height / rows));
-        
-        state.cellW = Math.floor(newW);
-        state.cellH = Math.floor(newH);
-        calculateAndDraw(true);
-    }
-
-    function stopDrag() {
-        if (state.isDragging) {
-            state.isDragging = false;
-            elements.canvasContainer.style.cursor = 'crosshair';
-        }
-    }
-
-    async function handleDownload() {
-        if (!state.isLoaded) return;
-        const cols = parseInt(elements.cols.value);
-        const rows = parseInt(elements.rows.value);
-        let gapX = parseInt(elements.gapX.value);
-        let gapY = parseInt(elements.gapY.value);
-        const targetSize = elements.resizeOpt.value;
-
-        const zip = new JSZip();
-        const folder = zip.folder("images");
-        
-        const originalText = elements.processBtn.innerText;
-        elements.processBtn.innerText = "⏳ 编码中...";
-        elements.processBtn.disabled = true;
-
-        const finalCellW = state.cellW;
-        const finalCellH = state.cellH;
-
-        for (let y = 0; y < rows; y++) {
-            for (let x = 0; x < cols; x++) {
-                const tempCanvas = document.createElement('canvas');
-                tempCanvas.width = finalCellW;
-                tempCanvas.height = finalCellH;
-                const tempCtx = tempCanvas.getContext('2d');
-                
-                tempCtx.drawImage(state.img, 
-                    x * (finalCellW + gapX), y * (finalCellH + gapY), finalCellW, finalCellH, 
-                    0, 0, finalCellW, finalCellH
-                );
-
-                let finalCanvas = tempCanvas;
-                if (targetSize !== 'original') {
-                    const size = parseInt(targetSize);
-                    const resizeCanvas = document.createElement('canvas');
-                    resizeCanvas.width = size;
-                    resizeCanvas.height = size;
-                    const resizeCtx = resizeCanvas.getContext('2d');
-                    resizeCtx.imageSmoothingEnabled = true;
-                    resizeCtx.imageSmoothingQuality = 'high';
-                    resizeCtx.drawImage(tempCanvas, 0, 0, size, size);
-                    finalCanvas = resizeCanvas;
-                }
-
-                const dataUrl = finalCanvas.toDataURL('image/png');
-                const base64Data = dataUrl.replace(/^data:image\/(png|jpg);base64,/, "");
-                folder.file(`image_${y}_${x}.png`, base64Data, {base64: true});
-            }
-        }
-
-        zip.generateAsync({type:"blob"}).then(function(content) {
-            saveAs(content, "dataset.zip");
-            elements.processBtn.innerText = originalText;
-            elements.processBtn.disabled = false;
-        });
-    }
+        const p = getPos(e), cols = parseInt(el.cols.value)||1, rows = parseInt(el.rows.value)||1;
+        let nw = state.initialCellSize.w + (p.x - state.dragStartPos.x), nh = state.initialCellSize.h + (p.y - state.dragStartPos.y);
+        state.cellW = Math.floor(Math.max(50, Math.min(nw, state.img.width/cols)));
+        state.cellH = Math.floor(Math.max(50, Math.min(nh, state.img.height/rows)));
+        updateCalculation(true);
+    });
+    document.addEventListener('mouseup', () => { state.isDragging = false; el.canvas.style.cursor = 'crosshair'; });
 </script>
 </body>
 </html>

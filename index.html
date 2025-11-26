@@ -5,16 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <title>RabbitLin Smart Slicer - AI Training Data Tool / 在线智能切图工具(打标常用)</title>
-    <meta name="description" content="RabbitLin V16.0: All-in-one AI image slicer supporting 16:9/9:16 resolutions. Features drag alignment, smart crop, and 9-point anchoring. 支持高清宽屏/竖屏输出、9点锚点定位、智能裁切。">
-    <meta name="keywords" content="RabbitLin, AI Slicer, LoRA Dataset, Image Splitter, AI切图, 打标工具, Midjourney Grid, 16:9 crop">
+    <meta name="description" content="RabbitLin V23.0: The ultimate AI image slicer. Features GIF support, drag alignment, smart re-composition, aspect ratio locking, and batch export. 专为AI训练设计，支持GIF动图、比例锁定拖拽、智能重构、批量导出。">
+    <meta name="keywords" content="RabbitLin, AI Slicer, LoRA Dataset, Image Splitter, AI切图, 打标工具, Midjourney Grid, GIF Slicer">
     <meta name="author" content="RabbitLin">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/buzzfeed/libgif-js@master/libgif.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
     
     <style>
         :root { --primary: #ffcc00; --bg: #121212; --panel: #1e1e1e; --text: #e0e0e0; --accent: #2d2d2d; --wechat: #09bb07; --border: #444; }
-        body { font-family: 'Segoe UI', Roboto, "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; min-height: 100vh; }
+        body { font-family: 'Segoe UI', Roboto, "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; align-items: center; padding: 20px; min-height: 100vh; }
         .container { background: var(--panel); padding: 30px; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.6); width: 1100px; max-width: 98%; margin-bottom: 40px; position: relative; }
         
         /* Header */
@@ -30,7 +32,7 @@
         .btn-github span { color: var(--primary); }
         .btn-wechat { background: var(--wechat); color: #fff; }
 
-        /* Tutorial Steps */
+        /* Tutorial Steps (Explicitly mentioning 2 methods) */
         .tutorial-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 25px; background: #222; padding: 20px; border-radius: 8px; border: 1px solid #333; }
         .step-item { display: flex; align-items: flex-start; gap: 10px; }
         .step-num { background: var(--primary); color: #000; width: 24px; height: 24px; border-radius: 50%; text-align: center; font-size: 14px; font-weight: bold; line-height: 24px; flex-shrink: 0; }
@@ -38,47 +40,48 @@
         .step-text strong { color: #fff; display: block; margin-bottom: 4px; font-size: 14px; }
         .highlight { color: var(--primary); font-weight: bold; }
 
-        /* Layout */
+        /* Layout & Panels */
         .main-layout { display: flex; gap: 25px; flex-wrap: wrap; }
-        .left-col { flex: 2; min-width: 300px; }
-        .right-col { flex: 1; min-width: 250px; display: flex; flex-direction: column; gap: 15px; }
-
-        /* Panel Structure */
+        .left-col { flex: 2; min-width: 320px; }
+        .right-col { flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 15px; }
         .panel { background: var(--accent); padding: 20px; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border); }
-        .panel-title { font-size: 15px; font-weight: bold; color: #fff; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+        .panel-title { font-size: 15px; font-weight: bold; color: #fff; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
         
-        .panel-section { margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed #444; }
-        .panel-section:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
-        .section-label { font-size: 12px; color: var(--primary); font-weight: bold; margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
-        
-        /* Inputs */
+        /* Method Labels */
+        .method-label { font-size: 12px; color: #888; margin-top: 10px; margin-bottom: 5px; font-weight: bold; display: block; }
+        .method-highlight { color: var(--primary); }
+
+        /* Inputs & Controls */
         .control-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         label { font-size: 12px; color: #aaa; margin-bottom: 4px; display: block; font-weight: bold; }
         input[type="number"], select { width: 100%; padding: 8px; background: #333; border: 1px solid #555; color: #fff; border-radius: 4px; font-weight: bold; font-size: 13px; box-sizing: border-box; }
         input[type="number"]:focus, select:focus { border-color: var(--primary); outline: none; }
-
-        /* Sliders */
         .slider-group { margin-bottom: 15px; }
         input[type=range] { width: 100%; accent-color: var(--primary); margin-top: 5px; }
         .range-value { float: right; color: var(--primary); font-weight: bold; }
 
-        /* Main Button */
+        /* Upload & Button */
+        .upload-area { text-align: center; border: 2px dashed #555; padding: 20px; border-radius: 8px; cursor: pointer; transition: 0.2s; background: #222; margin-bottom: 20px; }
+        .upload-area:hover { border-color: var(--primary); background: #2a2a2a; }
         .main-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #ffcc00 0%, #ffaa00 100%); color: #000; border: none; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.2s; }
         .main-btn:hover { filter: brightness(1.1); }
         .main-btn:disabled { background: #444; color: #888; cursor: not-allowed; }
 
-        /* Upload */
-        .upload-area { text-align: center; border: 2px dashed #555; padding: 20px; border-radius: 8px; cursor: pointer; transition: 0.2s; background: #222; margin-bottom: 20px; }
-        .upload-area:hover { border-color: var(--primary); background: #2a2a2a; }
-
-        /* Previews */
+        /* Preview Areas */
         #canvas-container { position: relative; width: 100%; overflow: hidden; border: 2px solid #444; border-radius: 4px; background: #000; min-height: 200px; display: flex; align-items: center; justify-content: center; cursor: crosshair; }
         canvas { display: block; max-width: 100%; height: auto; }
         .single-preview-box { background: #000; border: 1px solid #555; border-radius: 4px; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 200px; position: relative; }
         .single-preview-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
         .preview-label { position: absolute; top: 5px; left: 5px; font-size: 12px; color: rgba(255,255,255,0.7); background: rgba(0,0,0,0.6); padding: 2px 5px; border-radius: 3px; }
+        .new-tag { background: #ff0055; color: #fff; padding: 2px 6px; border-radius: 3px; font-size: 10px; margin-left: 8px; vertical-align: middle; }
 
-        .win-warning { margin-top: 15px; padding: 12px; background: #441818; border: 1px solid #883333; border-radius: 6px; text-align: center; color: #ff8888; font-size: 13px; display: none; }
+        /* Progress & Warnings */
+        #progress-section { display: none; margin-top: 15px; background: #222; padding: 15px; border-radius: 6px; border: 1px solid #444; }
+        #progress-bar-bg { width: 100%; height: 10px; background: #444; border-radius: 5px; overflow: hidden; margin: 10px 0; }
+        #progress-fill { width: 0%; height: 100%; background: var(--primary); transition: width 0.2s; }
+        #status-text { color: #fff; font-size: 13px; text-align: center; font-weight: bold; }
+        #debug-log { color: #ff5555; font-size: 11px; font-family: monospace; margin-top: 5px; text-align: center; min-height: 15px; }
+        .win-warning { margin-top: 15px; padding: 12px; background: #441818; border: 1px solid #883333; border-radius: 6px; text-align: center; color: #ff8888; font-size: 13px; line-height: 1.5; }
 
         /* Modal */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 999; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
@@ -89,6 +92,9 @@
         .modal-sub { color: #666; font-size: 13px; margin-bottom: 10px; }
         @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
+        /* Hidden GIF Source (Critical Fix) */
+        #gif-source-container { position: absolute; top: 0; left: 0; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none; }
+
         .footer { margin-top: auto; padding-top: 20px; text-align: center; color: #666; font-size: 13px; border-top: 1px solid #333; width: 100%; }
         .author-tag { color: var(--primary); font-weight: bold; }
     </style>
@@ -96,8 +102,8 @@
 <body>
 
 <div class="container">
-    <h1>RabbitLin Smart Slicer <span>V16.0</span></h1>
-    <div class="subtitle">在线智能切图工具 (打标常用)</div>
+    <h1>RabbitLin Smart Slicer <span>V23.0</span></h1>
+    <div class="subtitle">在线智能切图工具 (打标/动图/全能版)</div>
 
     <div class="social-bar">
         <a href="https://github.com/rabbitlin-web/smart-crop-tool" target="_blank" class="social-btn btn-github">
@@ -112,152 +118,147 @@
     <div class="tutorial-steps">
         <div class="step-item">
             <div class="step-num">1</div>
-            <div class="step-text"><strong>Upload / 上传</strong>Click dashed box to upload grid image.<br>点击虚线框上传拼图。</div>
+            <div class="step-text"><strong>Upload / 上传</strong>JPG, PNG, GIF supported.<br>点击虚线框上传拼图。</div>
         </div>
         <div class="step-item">
             <div class="step-num">2</div>
-            <div class="step-text"><strong>Configure / 配置结构</strong>Set Cols & Rows first.<br>先设置行数和列数。</div>
-        </div>
-        <div class="step-item">
-            <div class="step-num">3</div>
-            <div class="step-text"><strong>Align / 对齐 (二选一)</strong>
-                <span class="highlight">A. Drag (拖拽)</span> for visual fix.<br>
-                <span class="highlight">B. Input (输入)</span> for precise gap.<br>
-                拖拽黄色手柄，或者输入间距数值。
+            <div class="step-text"><strong>Align / 对齐 (2 Ways)</strong>
+                A: <span class="highlight">Drag Yellow Handle (拖拽)</span><br>
+                B: <span class="highlight">Input Gap Value (输间距)</span>
             </div>
         </div>
         <div class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-text"><strong>Smart Fix / 智能重构</strong>Use Scale & Anchor.<br>利用缩放和锚点修复构图。</div>
+        </div>
+        <div class="step-item">
             <div class="step-num">4</div>
-            <div class="step-text"><strong>Export / 导出</strong>Select Resolution & Mode.<br>选择分辨率模式，点击下载。</div>
+            <div class="step-text"><strong>Export / 导出</strong>Download ZIP.<br>确认无误后点击下载。</div>
         </div>
     </div>
 
     <div class="upload-area" onclick="document.getElementById('upload').click()">
-        <input type="file" id="upload" accept="image/*" style="display: none;">
-        <div style="font-size: 18px; margin-bottom: 5px;">📂 <strong>Click to Upload / 点击上传图片</strong></div>
-        <div id="file-info" style="font-size: 13px; color: #888;">Support JPG / PNG / WEBP</div>
+        <input type="file" id="upload" accept="image/jpeg, image/png, image/webp, image/gif" style="display: none;">
+        <div style="font-size: 18px; margin-bottom: 5px;">📂 <strong>Click to Upload / 点击上传 (JPG/PNG/GIF)</strong></div>
+        <div id="file-info" style="font-size: 13px; color: #888;">Supports Animated GIF</div>
+    </div>
+
+    <div id="gif-source-container">
+        <img id="gif-source">
     </div>
 
     <div class="main-layout">
         <div class="left-col">
             <div class="panel">
                 <div class="panel-title">1. Grid Structure / 基础结构设置</div>
-                
-                <div class="panel-section">
-                    <span class="section-label">A. Step 1: Define Grid / 定义行列</span>
-                    <div class="control-grid">
-                        <div><label>Columns / 列数</label><input type="number" id="cols" value="5" min="1"></div>
-                        <div><label>Rows / 行数</label><input type="number" id="rows" value="3" min="1"></div>
-                    </div>
+                <div class="control-grid">
+                    <div><label>Columns / 列数</label><input type="number" id="cols" value="5" min="1"></div>
+                    <div><label>Rows / 行数</label><input type="number" id="rows" value="3" min="1"></div>
                 </div>
-
-                <div class="panel-section">
-                    <span class="section-label">B. Step 2: Alignment / 对齐方式 (二选一)</span>
+                
+                <div style="margin-top:15px; border-top:1px dashed #444; padding-top:10px;">
                     <div class="control-grid">
-                        <div style="border-right: 1px dashed #444; padding-right: 10px;">
-                            <label style="color:#fff;">Method 1: Visual Drag (推荐)</label>
-                            <label style="font-weight:normal; font-size:11px;">Lock Ratio & Drag Yellow Handle</label>
-                            <select id="aspect-ratio" style="margin-top:5px;">
-                                <option value="free">Free / 自由拖拽</option>
+                        <div>
+                            <span class="method-label method-highlight">Method 1: Visual Drag (推荐拖拽)</span>
+                            <label style="font-weight:normal; font-size:11px; margin-bottom:5px;">Lock Ratio / 锁定拖拽比例</label>
+                            <select id="aspect-ratio">
+                                <option value="free">Free Drag / 自由拖拽</option>
                                 <option value="1">1:1 Square / 正方形</option>
                                 <option value="1.7777777">16:9 Landscape / 横屏</option>
                                 <option value="0.5625">9:16 Portrait / 竖屏</option>
                                 <option value="1.3333333">4:3 Standard</option>
+                                <option value="0.75">3:4 Vertical</option>
+                                <option value="1.5">3:2 Classic</option>
+                                <option value="0.6666666">2:3 Vertical</option>
                             </select>
                         </div>
-                        <div style="padding-left: 5px;">
-                            <label style="color:#fff;">Method 2: Manual Input</label>
-                            <label style="font-weight:normal; font-size:11px;">Input Precise Gap Values</label>
-                            <div style="display:flex; gap:5px; margin-top:5px;">
-                                <input type="number" id="gap-x" value="96" min="0" placeholder="H-Gap">
-                                <input type="number" id="gap-y" value="96" min="0" placeholder="V-Gap">
+                        <div>
+                            <span class="method-label">Method 2: Manual Input (输入间距)</span>
+                            <label style="font-weight:normal; font-size:11px; margin-bottom:5px;">Gap in Pixels / 像素值</label>
+                            <div style="display:flex; gap:5px;">
+                                <input type="number" id="gap-x" value="0" placeholder="Gap X">
+                                <input type="number" id="gap-y" value="0" placeholder="Gap Y">
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="panel" style="border-color: #554400; background: #26241a;">
-                <div class="panel-title" style="color:#ffcc00;">2. Export Settings / 导出设置</div>
-                
-                <div class="panel-section">
-                    <span class="section-label">C. Step 3: Resolution & Mode / 分辨率</span>
-                    <div class="control-grid">
-                        <div>
-                            <label>Output Size / 输出分辨率 <span style="color:var(--primary);">(New!)</span></label>
-                            <select id="resize-opt">
-                                <option value="original">Original / 原始切片大小</option>
-                                <option value="1024x1024">1024 x 1024 (Square)</option>
-                                <option value="512x512">512 x 512 (Square)</option>
-                                <option value="768x768">768 x 768 (Square)</option>
-                                <option disabled>--- Landscape (16:9) ---</option>
-                                <option value="1280x720">1280 x 720 (HD)</option>
-                                <option value="1920x1080">1920 x 1080 (FHD)</option>
-                                <option value="1024x576">1024 x 576 (Web)</option>
-                                <option disabled>--- Portrait (9:16) ---</option>
-                                <option value="720x1280">720 x 1280 (HD)</option>
-                                <option value="576x1024">576 x 1024 (Web)</option>
-                                <option value="1080x1920">1080 x 1920 (FHD)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label>Resize Mode / 缩放模式</label>
-                            <select id="resize-mode">
-                                <option value="cover">Smart Crop (推荐! 不变形)</option>
-                                <option value="stretch">Stretch / 强制拉伸 (变形)</option>
-                                <option value="contain">Contain / 保留黑边</option>
-                            </select>
-                        </div>
+            <div class="panel">
+                <div class="panel-title">2. Export Settings / 导出设置</div>
+                <div class="control-grid">
+                    <div>
+                        <label>Output Size / 尺寸</label>
+                        <select id="resize-opt">
+                            <option value="original">Original / 原始</option>
+                            <option value="768x768">768x768</option>
+                            <option value="1024x1024">1024x1024</option>
+                            <option disabled>--- 16:9 ---</option>
+                            <option value="1280x720">1280x720 (HD)</option>
+                            <option value="1920x1080">1920x1080 (FHD)</option>
+                            <option value="1024x576">1024x576</option>
+                            <option disabled>--- 9:16 ---</option>
+                            <option value="720x1280">720x1280</option>
+                            <option value="1080x1920">1080x1920</option>
+                            <option value="576x1024">576x1024</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Mode / 模式</label>
+                        <select id="resize-mode">
+                            <option value="cover">Smart Crop (推荐! 不变形)</option>
+                            <option value="contain">Contain (黑边)</option>
+                            <option value="stretch">Stretch (拉伸)</option>
+                        </select>
                     </div>
                 </div>
-
-                <div class="slider-group" style="margin-top:10px; border-top:1px dashed #444; padding-top:10px;">
-                    <label>Optional: Content Fine-tuning / 微调内容</label>
-                    <div style="display:flex; gap:10px; align-items:center;">
-                        <input type="range" id="content-scale" min="50" max="150" value="100" step="1" style="flex:1;">
-                        <span id="scale-val" style="font-size:12px; font-weight:bold; width:40px;">100%</span>
-                    </div>
+                
+                <div style="margin-top:15px;">
+                    <label>Zoom / 缩放: <span id="scale-val" style="color:var(--primary)">100%</span></label>
+                    <input type="range" id="content-scale" min="50" max="150" value="100">
                     
-                    <label style="margin-top:10px;">Anchor Position / 锚点 (9-Point) <span style="color:var(--primary);">(Updated!)</span></label>
+                    <label style="margin-top:10px;">Anchor / 9点锚点 (9-Point)</label>
                     <select id="anchor-pos">
                         <option value="center">Center / 居中</option>
                         <option disabled>--- Top ---</option>
                         <option value="top-left">Top Left / 左上</option>
-                        <option value="top-center">Top Center / 顶部居中</option>
+                        <option value="top-center">Top Center / 顶中</option>
                         <option value="top-right">Top Right / 右上</option>
                         <option disabled>--- Middle ---</option>
                         <option value="middle-left">Middle Left / 居左</option>
                         <option value="middle-right">Middle Right / 居右</option>
                         <option disabled>--- Bottom ---</option>
                         <option value="bottom-left">Bottom Left / 左下</option>
-                        <option value="bottom-center">Bottom Center / 底部居中</option>
+                        <option value="bottom-center">Bottom Center / 底中</option>
                         <option value="bottom-right">Bottom Right / 右下</option>
                     </select>
                 </div>
             </div>
             
-            <button id="processBtn" class="main-btn" disabled>✅ Confirm & Download / 确认下载 ZIP</button>
-            <div class="win-warning" id="win-alert">
-                ⚠️ <strong>Windows Users:</strong> Please use 7-Zip or Bandizip to extract.
+            <button id="processBtn" class="main-btn" disabled>✅ Start Processing / 开始处理</button>
+            
+            <div id="progress-section">
+                <div id="status-text">Ready / 就绪</div>
+                <div id="progress-bar-bg"><div id="progress-fill"></div></div>
+                <div id="debug-log"></div>
+            </div>
+
+            <div class="win-warning">
+                ⚠️ <strong>Windows Users:</strong> Please use 7-Zip or Bandizip to extract / <strong>Windows用户:</strong> 请使用 7-Zip 或 Bandizip 解压
             </div>
         </div>
 
         <div class="right-col">
-            <div class="panel" style="padding:10px; margin:0;">
-                <div class="panel-title" style="border:none; margin-bottom:5px;">Single Preview / 单图预览</div>
+            <div class="panel">
+                <div class="panel-title">Preview / 单图预览 <span class="new-tag" id="gif-tag" style="display:none;">GIF</span></div>
                 <div class="single-preview-box">
-                    <span class="preview-label">Result Preview</span>
-                    <img id="single-preview-img" alt="Waiting...">
+                    <img id="single-preview-img" alt="Preview">
                 </div>
-                <div style="text-align:center; margin-top:5px; font-size:12px; color:#888;">
-                    Final Output: <span id="final-res" style="color:#ffcc00;">-- x --</span>
-                </div>
+                <div style="text-align:center; font-size:12px; color:#666; margin-top:5px;">Target: <span id="final-res">--</span></div>
             </div>
-
-            <div class="panel" style="padding:10px; flex:1; display:flex; flex-direction:column;">
-                <div class="panel-title" style="border:none; margin-bottom:5px;">Grid Alignment / 整体对齐</div>
-                <div style="font-size:11px; color:#666; margin-bottom:5px;">Drag yellow handle to adjust / 拖动黄色手柄调节</div>
-                <div id="canvas-container" style="flex:1;">
+            <div class="panel">
+                <div class="panel-title">Grid / 整体对齐</div>
+                <div id="canvas-container">
                     <canvas id="previewCanvas"></canvas>
                 </div>
             </div>
@@ -280,6 +281,9 @@
 </div>
 
 <script>
+    const workerBlob = new Blob([`importScripts('https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js');`], { type: 'application/javascript' });
+    const workerUrl = URL.createObjectURL(workerBlob);
+
     function openModal() { document.getElementById('qrModal').style.display = 'flex'; }
     function closeModalBtn() { document.getElementById('qrModal').style.display = 'none'; }
     function closeModal(e) { if (e.target.id === 'qrModal') closeModalBtn(); }
@@ -294,10 +298,17 @@
         resizeOpt: document.getElementById('resize-opt'), resizeMode: document.getElementById('resize-mode'),
         processBtn: document.getElementById('processBtn'), canvas: document.getElementById('previewCanvas'),
         singlePreview: document.getElementById('single-preview-img'), finalRes: document.getElementById('final-res'),
-        fileInfo: document.getElementById('file-info'), winAlert: document.getElementById('win-alert')
+        fileInfo: document.getElementById('file-info'), gifSource: document.getElementById('gif-source'),
+        gifTag: document.getElementById('gif-tag'),
+        progSection: document.getElementById('progress-section'), progFill: document.getElementById('progress-fill'),
+        statusText: document.getElementById('status-text'), debugLog: document.getElementById('debug-log')
     };
     const ctx = el.canvas.getContext('2d');
-    let state = { img: new Image(), isLoaded: false, cellW: 0, cellH: 0, isDragging: false, dragStartPos: {x:0,y:0}, initialCellSize: {w:0,h:0}, scaleFactor: 1 };
+    
+    let state = { 
+        img: new Image(), isLoaded: false, isGif: false, superGif: null,
+        cellW: 0, cellH: 0, isDragging: false, dragStartPos: {x:0,y:0}, initialCellSize: {w:0,h:0}, scaleFactor: 1 
+    };
 
     const inputs = [el.cols, el.rows, el.gapX, el.gapY, el.aspectRatio, el.contentScale, el.anchorPos, el.resizeOpt, el.resizeMode];
     inputs.forEach(input => input.addEventListener('input', () => {
@@ -308,126 +319,201 @@
     el.upload.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (!file) return;
+        el.debugLog.innerText = "";
+        state.isGif = file.type === 'image/gif';
+        el.gifTag.style.display = state.isGif ? 'inline-block' : 'none';
+        
         const reader = new FileReader();
         reader.onload = (event) => {
+            const dataUrl = event.target.result;
             state.img.onload = () => {
                 state.isLoaded = true;
                 el.processBtn.disabled = false;
-                el.winAlert.style.display = 'block';
-                el.fileInfo.innerHTML = `Loaded: <span style="color:#ffcc00">${state.img.width} x ${state.img.height}</span> px`;
+                el.fileInfo.innerHTML = `Loaded: <span style="color:#ffcc00">${state.img.width} x ${state.img.height}</span> px` + (state.isGif ? " (GIF)" : "");
                 updateCalculation(false);
             }
-            state.img.src = event.target.result;
+            state.img.src = dataUrl;
+
+            if(state.isGif) {
+                el.gifSource.src = dataUrl;
+                try {
+                    state.superGif = new SuperGif({ gif: el.gifSource });
+                    state.superGif.load(() => { updateCalculation(false); });
+                } catch(err) { el.debugLog.innerText = "GIF Parse Err: " + err.message; }
+            }
         }
         reader.readAsDataURL(file);
     });
 
-    el.processBtn.addEventListener('click', async () => {
-        if (!state.isLoaded) return;
-        const cols = parseInt(el.cols.value), rows = parseInt(el.rows.value);
-        let gapX = parseInt(el.gapX.value), gapY = parseInt(el.gapY.value);
-        const zip = new JSZip();
-        const folder = zip.folder("RabbitLin_Smart_Crops");
-        const originalText = el.processBtn.innerText;
-        el.processBtn.innerText = "⏳ Processing...";
-        el.processBtn.disabled = true;
-
-        const rawW = state.cellW, rawH = state.cellH;
-        
-        // --- V16 New Resize Parsing Logic ---
+    function getDrawParams() {
         const resizeVal = el.resizeOpt.value;
-        let targetW = rawW, targetH = rawH;
-
+        let targetW = state.cellW, targetH = state.cellH;
         if (resizeVal !== 'original') {
             if (resizeVal.includes('x')) {
                 const parts = resizeVal.split('x');
-                targetW = parseInt(parts[0]);
-                targetH = parseInt(parts[1]);
-            } else {
-                // Fallback for old single values
-                const s = parseInt(resizeVal);
-                targetW = s; targetH = s;
-            }
+                targetW = parseInt(parts[0]); targetH = parseInt(parts[1]);
+            } else { const s = parseInt(resizeVal); targetW = s; targetH = s; }
         }
+        targetW = Math.max(1, targetW); targetH = Math.max(1, targetH);
+        return {
+            rawW: state.cellW, rawH: state.cellH, targetW, targetH,
+            scale: parseInt(el.contentScale.value) / 100,
+            anchor: el.anchorPos.value, mode: el.resizeMode.value, srcX: 0, srcY: 0
+        };
+    }
 
-        const scale = parseInt(el.contentScale.value) / 100;
-        const anchor = el.anchorPos.value;
-        const mode = el.resizeMode.value;
+    function drawFrameToCanvas(sourceCanvas, targetCanvas, params) {
+        const { rawW, rawH, targetW, targetH, srcX, srcY, scale, anchor, mode } = params;
+        const pCtx = targetCanvas.getContext('2d');
+        pCtx.fillStyle = '#000'; pCtx.fillRect(0, 0, targetW, targetH);
+        pCtx.imageSmoothingEnabled = true; pCtx.imageSmoothingQuality = 'high';
+
+        let drawW = targetW, drawH = targetH, drawX = 0, drawY = 0;
+        if (mode === 'stretch') { drawW = targetW * scale; drawH = targetH * scale; } 
+        else {
+            const srcR = rawW/rawH, tgtR = targetW/targetH;
+            let rScale = 1;
+            if (mode === 'cover') rScale = (srcR > tgtR) ? targetH/rawH : targetW/rawW;
+            else rScale = (srcR > tgtR) ? targetW/rawW : targetH/rawH;
+            rScale *= scale; drawW = rawW*rScale; drawH = rawH*rScale;
+        }
+        
+        if (anchor.includes('left')) drawX = 0; 
+        else if (anchor.includes('right')) drawX = targetW-drawW; 
+        else drawX = (targetW-drawW)/2;
+
+        if (anchor.includes('top')) drawY = 0; 
+        else if (anchor.includes('bottom')) drawY = targetH-drawH; 
+        else drawY = (targetH-drawH)/2;
+
+        if(rawW > 0 && rawH > 0) {
+            try { pCtx.drawImage(sourceCanvas, srcX, srcY, rawW, rawH, drawX, drawY, drawW, drawH); } 
+            catch(e) { console.warn(e); }
+        }
+    }
+
+    el.processBtn.addEventListener('click', async () => {
+        if (!state.isLoaded) return;
+        el.processBtn.disabled = true;
+        el.progSection.style.display = 'block';
+        try {
+            if(state.isGif) await processGifDownload();
+            else await processStaticDownload();
+        } catch(err) {
+            el.debugLog.innerText = "Error: " + err.message;
+            el.processBtn.disabled = false;
+        }
+    });
+
+    async function processStaticDownload() {
+        el.statusText.innerText = "Processing Images / 处理中...";
+        el.progFill.style.width = "20%";
+        await new Promise(r => setTimeout(r, 50));
+        
+        const cols = parseInt(el.cols.value), rows = parseInt(el.rows.value);
+        let gapX = parseInt(el.gapX.value), gapY = parseInt(el.gapY.value);
+        const zip = new JSZip();
+        const folder = zip.folder("Smart_Crops");
+        const params = getDrawParams();
 
         for (let y = 0; y < rows; y++) {
             for (let x = 0; x < cols; x++) {
                 const pCanvas = document.createElement('canvas');
-                pCanvas.width = targetW; pCanvas.height = targetH;
-                const pCtx = pCanvas.getContext('2d');
-                pCtx.fillStyle = '#000'; pCtx.fillRect(0, 0, targetW, targetH);
-                pCtx.imageSmoothingEnabled = true; pCtx.imageSmoothingQuality = 'high';
-                
-                const srcX = x * (rawW + gapX);
-                const srcY = y * (rawH + gapY);
-
-                // Extraction canvas
-                const tempCanvas = document.createElement('canvas');
-                tempCanvas.width = rawW; tempCanvas.height = rawH;
-                const tempCtx = tempCanvas.getContext('2d');
-
-                let drawW = targetW, drawH = targetH;
-                let drawX = 0, drawY = 0;
-
-                if (mode === 'stretch') {
-                    drawW = targetW * scale; drawH = targetH * scale;
-                } else if (mode === 'cover' || mode === 'contain') {
-                    const srcRatio = rawW / rawH;
-                    const tgtRatio = targetW / targetH;
-                    let renderScale = 1;
-                    if (mode === 'cover') {
-                        if (srcRatio > tgtRatio) renderScale = targetH / rawH;
-                        else renderScale = targetW / rawW;
-                    } else { // contain
-                        if (srcRatio > tgtRatio) renderScale = targetW / rawW;
-                        else renderScale = targetH / rawH;
-                    }
-                    renderScale *= scale;
-                    drawW = rawW * renderScale;
-                    drawH = rawH * renderScale;
-                }
-
-                // --- V16 New Anchor Logic (9-Point) ---
-                // Horizontal
-                if (anchor.includes('left')) drawX = 0;
-                else if (anchor.includes('right')) drawX = targetW - drawW;
-                else drawX = (targetW - drawW) / 2; // centers
-
-                // Vertical
-                if (anchor.includes('top')) drawY = 0;
-                else if (anchor.includes('bottom')) drawY = targetH - drawH;
-                else drawY = (targetH - drawH) / 2; // centers
-
-                pCtx.drawImage(state.img, srcX, srcY, rawW, rawH, drawX, drawY, drawW, drawH);
-                
+                pCanvas.width = params.targetW; pCanvas.height = params.targetH;
+                params.srcX = x * (state.cellW + gapX); params.srcY = y * (state.cellH + gapY);
+                drawFrameToCanvas(state.img, pCanvas, params);
                 const dataUrl = pCanvas.toDataURL('image/png');
                 folder.file(`crop_${y}_${x}.png`, dataUrl.replace(/^data:image\/(png|jpg);base64,/, ""), {base64: true});
             }
         }
+        el.statusText.innerText = "Zipping / 打包中...";
+        el.progFill.style.width = "100%";
         zip.generateAsync({type:"blob"}).then((content) => {
-            saveAs(content, "smart_dataset.zip");
-            el.processBtn.innerText = originalText;
+            saveAs(content, "static_dataset.zip");
+            el.processBtn.innerText = "✅ Download Again / 再次下载";
             el.processBtn.disabled = false;
         });
-    });
+    }
+
+    async function processGifDownload() {
+        if(!state.superGif) throw new Error("GIF Lib not initialized.");
+        
+        const cols = parseInt(el.cols.value), rows = parseInt(el.rows.value);
+        let gapX = parseInt(el.gapX.value), gapY = parseInt(el.gapY.value);
+        const zip = new JSZip();
+        const folder = zip.folder("GIF_Crops");
+        const params = getDrawParams();
+        
+        let frameLength = 0;
+        try { frameLength = state.superGif.get_length(); } catch(e) { frameLength = 10; }
+        
+        const totalGIFs = rows * cols;
+        let encoders = [];
+        for(let i=0; i<totalGIFs; i++) {
+            encoders.push(new GIF({ workers: 2, quality: 10, workerScript: workerUrl, width: params.targetW, height: params.targetH }));
+        }
+
+        for (let f = 0; f < frameLength; f++) {
+            state.superGif.move_to(f);
+            const frameCanvas = state.superGif.get_canvas();
+            el.statusText.innerText = `Parsing Frame ${f+1} / ${frameLength}`;
+            el.progFill.style.width = Math.round((f/frameLength)*40) + '%';
+            await new Promise(r => setTimeout(r, 0));
+
+            const delay = 100; 
+            let cellIndex = 0;
+            for (let y = 0; y < rows; y++) {
+                for (let x = 0; x < cols; x++) {
+                    params.srcX = x * (state.cellW + gapX); params.srcY = y * (state.cellH + gapY);
+                    const tempCanvas = document.createElement('canvas');
+                    tempCanvas.width = params.targetW; tempCanvas.height = params.targetH;
+                    drawFrameToCanvas(frameCanvas, tempCanvas, params);
+                    encoders[cellIndex].addFrame(tempCanvas, {delay: delay, copy: true});
+                    cellIndex++;
+                }
+            }
+        }
+
+        el.statusText.innerText = "Encoding GIFs / 编码动图...";
+        let renderedCount = 0;
+        const renderPromise = new Promise((resolve) => {
+            for(let i=0; i<encoders.length; i++) {
+                encoders[i].on('finished', function(blob) {
+                    const r = Math.floor(i / cols); const c = i % cols;
+                    folder.file(`crop_${r}_${c}.gif`, blob);
+                    renderedCount++;
+                    const prog = 40 + Math.round((renderedCount / totalGIFs) * 60);
+                    el.progFill.style.width = prog + '%';
+                    el.statusText.innerText = `Encoded ${renderedCount} / ${totalGIFs}`;
+                    if(renderedCount === totalGIFs) resolve();
+                });
+                encoders[i].render();
+            }
+        });
+
+        await renderPromise;
+        el.statusText.innerText = "Zipping / 打包中...";
+        zip.generateAsync({type:"blob"}).then((content) => {
+            saveAs(content, "gif_dataset.zip");
+            el.processBtn.innerText = "✅ Download Again / 再次下载";
+            el.processBtn.disabled = false;
+        });
+    }
 
     function updateCalculation(fromDrag) {
         if (!state.isLoaded) return;
-        const cols = parseInt(el.cols.value) || 1, rows = parseInt(el.rows.value) || 1;
-        let gapX = parseInt(el.gapX.value) || 0, gapY = parseInt(el.gapY.value) || 0;
+        const cols = parseInt(el.cols.value)||1, rows = parseInt(el.rows.value)||1;
+        let gapX = parseInt(el.gapX.value)||0, gapY = parseInt(el.gapY.value)||0;
         if (!fromDrag) {
-            state.cellW = Math.floor((state.img.width - (cols - 1) * gapX) / cols);
-            state.cellH = Math.floor((state.img.height - (rows - 1) * gapY) / rows);
+            state.cellW = Math.floor((state.img.width - (cols-1)*gapX)/cols);
+            state.cellH = Math.floor((state.img.height - (rows-1)*gapY)/rows);
         } else {
-            if (cols > 1) gapX = Math.floor((state.img.width - cols * state.cellW) / (cols - 1));
-            if (rows > 1) gapY = Math.floor((state.img.height - rows * state.cellH) / (rows - 1));
+            if(cols>1) gapX = Math.floor((state.img.width - cols*state.cellW)/(cols-1));
+            if(rows>1) gapY = Math.floor((state.img.height - rows*state.cellH)/(rows-1));
             gapX = Math.max(0, gapX); gapY = Math.max(0, gapY);
             el.gapX.value = gapX; el.gapY.value = gapY;
         }
+        state.cellW = Math.max(1, state.cellW); state.cellH = Math.max(1, state.cellH);
         drawGridPreview(cols, rows, gapX, gapY);
         updateSinglePreview(0, 0, gapX, gapY);
     }
@@ -436,112 +522,31 @@
         el.canvas.width = state.img.width; el.canvas.height = state.img.height;
         state.scaleFactor = el.canvas.clientWidth / state.img.width;
         ctx.drawImage(state.img, 0, 0);
-        const lineWidth = Math.max(3, state.img.width / 300);
-        ctx.lineWidth = lineWidth;
-        for (let y = 0; y < rows; y++) {
-            for (let x = 0; x < cols; x++) {
-                const posX = x * (state.cellW + gapX), posY = y * (state.cellH + gapY);
-                ctx.strokeStyle = '#ff0000'; ctx.strokeRect(posX, posY, state.cellW, state.cellH);
-                if (x === 0 && y === 0) { ctx.fillStyle = '#ffcc00'; const h = lineWidth * 4; ctx.fillRect(posX + state.cellW - h, posY + state.cellH - h, h, h); }
+        const lw = Math.max(3, state.img.width/300); ctx.lineWidth = lw;
+        for (let y=0; y<rows; y++) {
+            for (let x=0; x<cols; x++) {
+                const pX = x*(state.cellW+gapX), pY = y*(state.cellH+gapY);
+                ctx.strokeStyle = '#ff0000'; ctx.strokeRect(pX, pY, state.cellW, state.cellH);
+                if(x===0 && y===0) { ctx.fillStyle='#ffcc00'; const h=lw*4; ctx.fillRect(pX+state.cellW-h, pY+state.cellH-h, h, h); }
             }
         }
     }
 
     function updateSinglePreview(x, y, gapX, gapY) {
-        const rawW = state.cellW, rawH = state.cellH;
-        // Parsing V16
-        const resizeVal = el.resizeOpt.value;
-        let targetW = rawW, targetH = rawH;
-        if (resizeVal !== 'original') {
-            if (resizeVal.includes('x')) {
-                const parts = resizeVal.split('x');
-                targetW = parseInt(parts[0]);
-                targetH = parseInt(parts[1]);
-            } else {
-                const s = parseInt(resizeVal);
-                targetW = s; targetH = s;
-            }
-        }
-        el.finalRes.innerText = `${targetW} x ${targetH}`;
-
+        const params = getDrawParams();
+        params.srcX = x*(state.cellW+gapX); params.srcY = y*(state.cellH+gapY);
+        el.finalRes.innerText = `${params.targetW} x ${params.targetH}`;
+        const source = (state.isGif && state.superGif) ? state.superGif.get_canvas() : state.img;
         const pCanvas = document.createElement('canvas');
-        pCanvas.width = targetW; pCanvas.height = targetH;
-        const pCtx = pCanvas.getContext('2d');
-        pCtx.fillStyle = '#000'; pCtx.fillRect(0, 0, targetW, targetH);
-        pCtx.imageSmoothingEnabled = true; pCtx.imageSmoothingQuality = 'high';
-
-        const scale = parseInt(el.contentScale.value) / 100;
-        const anchor = el.anchorPos.value;
-        const mode = el.resizeMode.value;
-
-        let drawW = targetW, drawH = targetH;
-        let drawX = 0, drawY = 0;
-
-        if (mode === 'stretch') {
-            drawW = targetW * scale; drawH = targetH * scale;
-        } else if (mode === 'cover' || mode === 'contain') {
-            const srcRatio = rawW / rawH;
-            const tgtRatio = targetW / targetH;
-            let renderScale = 1;
-            if (mode === 'cover') {
-                if (srcRatio > tgtRatio) renderScale = targetH / rawH;
-                else renderScale = targetW / rawW;
-            } else { 
-                if (srcRatio > tgtRatio) renderScale = targetW / rawW;
-                else renderScale = targetH / rawH;
-            }
-            renderScale *= scale;
-            drawW = rawW * renderScale;
-            drawH = rawH * renderScale;
-        }
-
-        if (anchor.includes('left')) drawX = 0;
-        else if (anchor.includes('right')) drawX = targetW - drawW;
-        else drawX = (targetW - drawW) / 2;
-
-        if (anchor.includes('top')) drawY = 0;
-        else if (anchor.includes('bottom')) drawY = targetH - drawH;
-        else drawY = (targetH - drawH) / 2;
-
-        pCtx.drawImage(state.img, x*(rawW+gapX), y*(rawH+gapY), rawW, rawH, drawX, drawY, drawW, drawH);
+        pCanvas.width = params.targetW; pCanvas.height = params.targetH;
+        drawFrameToCanvas(source, pCanvas, params);
         el.singlePreview.src = pCanvas.toDataURL();
     }
 
     function getPos(e) { const r = el.canvas.getBoundingClientRect(); return { x: (e.clientX - r.left)/state.scaleFactor, y: (e.clientY - r.top)/state.scaleFactor }; }
-    
-    el.canvas.addEventListener('mousedown', (e) => {
-        if (!state.isLoaded) return;
-        const p = getPos(e), z = Math.max(40, state.img.width/30);
-        if (Math.abs(p.x - state.cellW) < z && Math.abs(p.y - state.cellH) < z) { 
-            state.isDragging = true; 
-            state.dragStartPos = p; 
-            state.initialCellSize = { w: state.cellW, h: state.cellH }; 
-            el.canvas.style.cursor = 'nwse-resize'; 
-        }
-    });
-
-    el.canvas.addEventListener('mousemove', (e) => {
-        if (!state.isDragging) return;
-        const p = getPos(e), cols = parseInt(el.cols.value)||1, rows = parseInt(el.rows.value)||1;
-        
-        let newW = state.initialCellSize.w + (p.x - state.dragStartPos.x);
-        let newH = state.initialCellSize.h + (p.y - state.dragStartPos.y);
-        
-        const ratioVal = el.aspectRatio.value;
-        if (ratioVal !== 'free') {
-            const r = parseFloat(ratioVal);
-            newH = Math.round(newW / r);
-        }
-
-        newW = Math.floor(Math.max(50, Math.min(newW, state.img.width/cols)));
-        newH = Math.floor(Math.max(50, Math.min(newH, state.img.height/rows)));
-        
-        state.cellW = newW;
-        state.cellH = newH;
-        updateCalculation(true);
-    });
-
-    document.addEventListener('mouseup', () => { state.isDragging = false; el.canvas.style.cursor = 'crosshair'; });
+    el.canvas.addEventListener('mousedown', (e) => { if(state.isLoaded) { const p=getPos(e), z=Math.max(40, state.img.width/30); if(Math.abs(p.x-state.cellW)<z && Math.abs(p.y-state.cellH)<z) { state.isDragging=true; state.dragStartPos=p; state.initialCellSize={w:state.cellW,h:state.cellH}; el.canvas.style.cursor='nwse-resize'; } } });
+    el.canvas.addEventListener('mousemove', (e) => { if(state.isDragging) { const p=getPos(e), cols=parseInt(el.cols.value)||1, rows=parseInt(el.rows.value)||1; let nw=state.initialCellSize.w+(p.x-state.dragStartPos.x), nh=state.initialCellSize.h+(p.y-state.dragStartPos.y); const rv=el.aspectRatio.value; if(rv!=='free'){ nh=Math.round(nw/parseFloat(rv)); } state.cellW=Math.floor(Math.max(50,Math.min(nw,state.img.width/cols))); state.cellH=Math.floor(Math.max(50,Math.min(nh,state.img.height/rows))); updateCalculation(true); } });
+    document.addEventListener('mouseup', () => { state.isDragging=false; el.canvas.style.cursor='crosshair'; });
 </script>
 </body>
 </html>

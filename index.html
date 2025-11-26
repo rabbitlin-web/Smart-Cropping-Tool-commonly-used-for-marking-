@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <title>RabbitLin Smart Slicer - AI Training Data Tool / 在线智能切图工具(打标常用)</title>
-    <meta name="description" content="RabbitLin V11.0: Professional AI image slicer for Stable Diffusion & Midjourney. Auto-align, smart rescale, and batch export. 专为AI训练设计的智能切图工具，支持自动对齐、智能缩放重构、批量导出。">
-    <meta name="keywords" content="RabbitLin, AI Slicer, LoRA Dataset, Image Splitter, AI切图, 打标工具, 去水印">
+    <meta name="description" content="RabbitLin V13.0: The ultimate AI image slicer. Features drag-and-drop grid alignment, smart re-composition, and batch export. 专为AI训练设计，支持拖拽对齐、智能缩放重构、批量导出。">
+    <meta name="keywords" content="RabbitLin, AI Slicer, LoRA Dataset, Image Splitter, AI切图, 打标工具, Midjourney Grid">
     <meta name="author" content="RabbitLin">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -22,19 +22,21 @@
         h1 span { color: var(--primary); font-size: 22px; }
         .subtitle { text-align: center; color: #888; font-size: 14px; margin-bottom: 20px; }
 
-        /* Social & Support Bar / 社交互动栏 */
+        /* Social Bar */
         .social-bar { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
         .social-btn { display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 50px; text-decoration: none; font-size: 13px; font-weight: bold; transition: transform 0.2s; cursor: pointer; border: none; }
         .social-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
-        
         .btn-github { background: #333; color: #fff; border: 1px solid #555; }
         .btn-github span { color: var(--primary); }
-        
         .btn-wechat { background: var(--wechat); color: #fff; }
 
-        /* Help Box */
-        .help-box { background: #252525; border-left: 4px solid var(--primary); padding: 15px 20px; margin-bottom: 25px; border-radius: 4px; font-size: 13px; color: #ccc; line-height: 1.6; }
-        .tag { display: inline-block; background: var(--primary); color: #000; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-right: 5px; }
+        /* Tutorial Steps (Updated for V13) */
+        .tutorial-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 25px; background: #222; padding: 20px; border-radius: 8px; border: 1px solid #333; }
+        .step-item { display: flex; align-items: flex-start; gap: 10px; }
+        .step-num { background: var(--primary); color: #000; width: 24px; height: 24px; border-radius: 50%; text-align: center; font-size: 14px; font-weight: bold; line-height: 24px; flex-shrink: 0; }
+        .step-text { font-size: 13px; color: #aaa; line-height: 1.5; }
+        .step-text strong { color: #fff; display: block; margin-bottom: 4px; font-size: 14px; }
+        .highlight { color: var(--primary); font-weight: bold; }
 
         /* Layout */
         .main-layout { display: flex; gap: 25px; flex-wrap: wrap; }
@@ -74,7 +76,7 @@
 
         .win-warning { margin-top: 15px; padding: 12px; background: #441818; border: 1px solid #883333; border-radius: 6px; text-align: center; color: #ff8888; font-size: 13px; display: none; }
 
-        /* Modal (Popup) */
+        /* Modal */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 999; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
         .modal-box { background: #fff; padding: 20px; border-radius: 12px; text-align: center; max-width: 90%; width: 350px; position: relative; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .modal-box img { width: 100%; border-radius: 8px; }
@@ -90,7 +92,7 @@
 <body>
 
 <div class="container">
-    <h1>RabbitLin Smart Slicer <span>V11.0</span></h1>
+    <h1>RabbitLin Smart Slicer <span>V13.0</span></h1>
     <div class="subtitle">在线智能切图工具 (打标常用)</div>
 
     <div class="social-bar">
@@ -98,15 +100,33 @@
             <svg height="16" width="16" viewBox="0 0 16 16" fill="#ffffff"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
             Github 求 Star (✧ω✧)
         </a>
-        
         <button class="social-btn btn-wechat" onclick="openModal()">
             🥤 投喂兔子 / Buy me a milk tea
         </button>
     </div>
 
-    <div class="help-box">
-        <div style="margin-bottom:8px;"><span class="tag">Basic / 基础</span> Upload Grid images, auto-align and split. / 上传 Grid 拼图，自动对齐切分。</div>
-        <div><span class="tag">V11 Feature</span> <strong>Smart Re-composition / 智能重构</strong>: Fix offset issues in Banana Pro images. Use Anchor & Scale to adjust composition. / 修复构图偏移，使用锚点和缩放重新构图。</div>
+    <div class="tutorial-steps">
+        <div class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-text"><strong>Upload / 上传</strong>Click dashed box to upload grid image.<br>点击虚线框上传拼图。</div>
+        </div>
+        <div class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-text"><strong>Set & Align / 设置与对齐 (重要)</strong>
+                Method A: Input 'Gap' values manually.<br>
+                Method B: <span class="highlight">Drag the yellow handle</span> on the 1st red box to auto-resize!<br>
+                <strong>方法A:</strong> 手动输入间距数值。<br>
+                <strong>方法B:</strong> 直接<span class="highlight">拖动第一个红框的黄色手柄</span>，直观调整网格！
+            </div>
+        </div>
+        <div class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-text"><strong>Smart Fix / 智能重构</strong>Fix offset/composition issues.<br>利用缩放和锚点修复构图偏移。</div>
+        </div>
+        <div class="step-item">
+            <div class="step-num">4</div>
+            <div class="step-text"><strong>Download / 下载</strong>Confirm preview & click Download.<br>确认无误后点击下载 ZIP。</div>
+        </div>
     </div>
 
     <div class="upload-area" onclick="document.getElementById('upload').click()">
@@ -122,22 +142,18 @@
                 <div class="control-grid">
                     <div><label>Columns / 列数</label><input type="number" id="cols" value="5" min="1"></div>
                     <div><label>Rows / 行数</label><input type="number" id="rows" value="3" min="1"></div>
-                    <div><label>↔️ H-Gap / 水平间距 (px)</label><input type="number" id="gap-x" value="96" min="0"></div>
+                    <div><label↔️ H-Gap / 水平间距 (px)</label><input type="number" id="gap-x" value="96" min="0"></div>
                     <div><label>↕️ V-Gap / 垂直间距 (px)</label><input type="number" id="gap-y" value="96" min="0"></div>
                 </div>
             </div>
 
             <div class="panel" style="border-color: #554400; background: #26241a;">
                 <div class="panel-title" style="color:#ffcc00;">2. Smart Re-composition / 智能重构</div>
-                
                 <div class="slider-group">
                     <label>Content Scale / 内容缩放: <span id="scale-val" class="range-value">100%</span></label>
                     <input type="range" id="content-scale" min="50" max="150" value="100" step="1">
-                    <div style="font-size:11px; color:#777; margin-top:2px;">
-                        < 100%: Shrink (Add Borders) | > 100%: Zoom (Crop Edges)
-                    </div>
+                    <div style="font-size:11px; color:#777; margin-top:2px;">< 100%: Shrink (Add Borders) | > 100%: Zoom (Crop Edges)</div>
                 </div>
-
                 <div class="control-grid">
                     <div>
                         <label>Anchor / 对齐锚点</label>
@@ -181,7 +197,7 @@
 
             <div class="panel" style="padding:10px; flex:1; display:flex; flex-direction:column;">
                 <div class="panel-title" style="border:none; margin-bottom:5px;">Alignment / 整体对齐</div>
-                <div style="font-size:11px; color:#666; margin-bottom:5px;">Drag top-left box to adjust / 拖动左上角红框微调</div>
+                <div style="font-size:11px; color:#666; margin-bottom:5px;">Drag yellow handle to adjust / 拖动黄色手柄调节</div>
                 <div id="canvas-container" style="flex:1;">
                     <canvas id="previewCanvas"></canvas>
                 </div>
@@ -191,7 +207,7 @@
 </div>
 
 <div class="footer">
-    Designed by <span class="author-tag">RabbitLin</span> | WeChat: <span class="author-tag">Aa272123071</span>
+    Designed by <span class="author-tag">RabbitLin</span> | 微信: <span class="author-tag">Aa272123071</span>
 </div>
 
 <div id="qrModal" class="modal-overlay" onclick="closeModal(event)">
@@ -199,18 +215,16 @@
         <div class="modal-close" onclick="closeModalBtn()">×</div>
         <div class="modal-text">🥤 Buy me a Milk Tea ~</div>
         <div class="modal-sub">既然好用，就请兔子喝杯茶吧 (开心)</div>
-        <img src="pay.jpg" alt="WeChat Pay QR Code" onerror="this.src='https://via.placeholder.com/300?text=Please+Upload+pay.jpg';">
+        <img src="pay.jpg" alt="WeChat Pay" onerror="this.src='https://via.placeholder.com/300?text=Please+Upload+pay.jpg';">
         <div style="margin-top:10px; font-size:12px; color:#999;">WeChat Pay / 微信支付</div>
     </div>
 </div>
 
 <script>
-    // --- Logic for Modal ---
     function openModal() { document.getElementById('qrModal').style.display = 'flex'; }
     function closeModalBtn() { document.getElementById('qrModal').style.display = 'none'; }
     function closeModal(e) { if (e.target.id === 'qrModal') closeModalBtn(); }
 
-    // --- Core Tool Logic ---
     const el = {
         upload: document.getElementById('upload'),
         cols: document.getElementById('cols'), rows: document.getElementById('rows'),
@@ -295,7 +309,6 @@
         if (!state.isLoaded) return;
         const cols = parseInt(el.cols.value) || 1, rows = parseInt(el.rows.value) || 1;
         let gapX = parseInt(el.gapX.value) || 0, gapY = parseInt(el.gapY.value) || 0;
-        
         if (!fromDrag) {
             state.cellW = Math.floor((state.img.width - (cols - 1) * gapX) / cols);
             state.cellH = Math.floor((state.img.height - (rows - 1) * gapY) / rows);
@@ -308,7 +321,6 @@
         drawGridPreview(cols, rows, gapX, gapY);
         updateSinglePreview(0, 0, gapX, gapY);
     }
-
     function drawGridPreview(cols, rows, gapX, gapY) {
         el.canvas.width = state.img.width; el.canvas.height = state.img.height;
         state.scaleFactor = el.canvas.clientWidth / state.img.width;
@@ -319,14 +331,11 @@
             for (let x = 0; x < cols; x++) {
                 const posX = x * (state.cellW + gapX), posY = y * (state.cellH + gapY);
                 ctx.strokeStyle = '#ff0000'; ctx.strokeRect(posX, posY, state.cellW, state.cellH);
-                if (x === 0 && y === 0) {
-                    ctx.fillStyle = '#ffcc00'; const h = lineWidth * 4;
-                    ctx.fillRect(posX + state.cellW - h, posY + state.cellH - h, h, h);
-                }
+                // Draw Handle only on 0,0
+                if (x === 0 && y === 0) { ctx.fillStyle = '#ffcc00'; const h = lineWidth * 4; ctx.fillRect(posX + state.cellW - h, posY + state.cellH - h, h, h); }
             }
         }
     }
-
     function updateSinglePreview(x, y, gapX, gapY) {
         const rawW = state.cellW, rawH = state.cellH;
         const scale = parseInt(el.contentScale.value) / 100;
@@ -334,32 +343,24 @@
         const resizeTarget = el.resizeOpt.value;
         let targetW = rawW, targetH = rawH;
         if (resizeTarget !== 'original') { targetW = parseInt(resizeTarget); targetH = parseInt(resizeTarget); }
-        
         el.finalRes.innerText = `${targetW} x ${targetH}`;
         const pCanvas = document.createElement('canvas');
         pCanvas.width = targetW; pCanvas.height = targetH;
         const pCtx = pCanvas.getContext('2d');
         pCtx.fillStyle = '#000'; pCtx.fillRect(0, 0, targetW, targetH);
         pCtx.imageSmoothingEnabled = true; pCtx.imageSmoothingQuality = 'high';
-
         const drawW = targetW * scale, drawH = targetH * scale;
         let drawX = (targetW-drawW)/2, drawY = (targetH-drawH)/2;
         if (anchor === 'left') drawX = 0; else if (anchor === 'right') drawX = targetW - drawW;
         if (anchor === 'top') drawY = 0; else if (anchor === 'bottom') drawY = targetH - drawH;
-
         pCtx.drawImage(state.img, x*(rawW+gapX), y*(rawH+gapY), rawW, rawH, drawX, drawY, drawW, drawH);
         el.singlePreview.src = pCanvas.toDataURL();
     }
-
-    // Drag
     function getPos(e) { const r = el.canvas.getBoundingClientRect(); return { x: (e.clientX - r.left)/state.scaleFactor, y: (e.clientY - r.top)/state.scaleFactor }; }
     el.canvas.addEventListener('mousedown', (e) => {
         if (!state.isLoaded) return;
         const p = getPos(e), z = Math.max(40, state.img.width/30);
-        if (Math.abs(p.x - state.cellW) < z && Math.abs(p.y - state.cellH) < z) {
-            state.isDragging = true; state.dragStartPos = p; state.initialCellSize = { w: state.cellW, h: state.cellH };
-            el.canvas.style.cursor = 'nwse-resize';
-        }
+        if (Math.abs(p.x - state.cellW) < z && Math.abs(p.y - state.cellH) < z) { state.isDragging = true; state.dragStartPos = p; state.initialCellSize = { w: state.cellW, h: state.cellH }; el.canvas.style.cursor = 'nwse-resize'; }
     });
     el.canvas.addEventListener('mousemove', (e) => {
         if (!state.isDragging) return;

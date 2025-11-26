@@ -1,4 +1,4 @@
-你可以直接打开网页免费使用它，它的功能是上传网格谜题，进行对齐、分割，并一键批量导出素材。针对 Banana Pro 等生图容易偏离中心的问题，你可以设置“内容缩放”和“对齐锚点”。例如：图片内容太大，可设为 90% 缩放；如果头顶被切，可选择“底部对齐”来拉低画面。直接点击下面网页可以使用: https://rabbitlin-web.github.io/Smart-Cropping-Tool-commonly-used-for-marking-/
+你可以直接打开网页免费使用它，它的功能是上传grid拼图，进行对齐、分割，并一键批量导出素材。针对 Banana Pro 等生图容易偏离中心的问题，你可以设置“内容缩放”和“对齐锚点”。例如：图片内容太大，可设为 90% 缩放；如果头顶被切，可选择“底部对齐”来拉低画面。直接点击下面网页可以使用: https://rabbitlin-web.github.io/Smart-Cropping-Tool-commonly-used-for-marking-/
 You can directly open the web page to use it for free, and its function is to upload grid puzzles, align, split, and export materials in batches with one click. To address the issue that raw images like Banana Pro tend to be off-center, you can set Content Scaling and Alignment Anchors. For example, if the image content is too large, it can be set to 90% zoom; If the top of the head is cut, select Bottom Alignment to lower the frame. Click directly on the following webpage to use: https://rabbitlin-web.github.io/Smart-Cropping-Tool-commonly-used-for-marking-/
 
 

@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="google-site-verification" content="PcO5-reGg1ebelqRMQLfdKVrVImP4JjhP9XRRHi3nyc" />  
+    
     <title>RabbitLin Smart Slicer - AI Training Data Tool / 在线智能切图工具(打标常用)</title>
-    <meta name="description" content="RabbitLin V13.0: The ultimate AI image slicer. Features drag-and-drop grid alignment, smart re-composition, and batch export. 专为AI训练设计，支持拖拽对齐、智能缩放重构、批量导出。">
-    <meta name="keywords" content="RabbitLin, AI Slicer, LoRA Dataset, Image Splitter, AI切图, 打标工具, Midjourney Grid">
+    <meta name="description" content="RabbitLin V16.0: All-in-one AI image slicer supporting 16:9/9:16 resolutions. Features drag alignment, smart crop, and 9-point anchoring. 支持高清宽屏/竖屏输出、9点锚点定位、智能裁切。">
+    <meta name="keywords" content="RabbitLin, AI Slicer, LoRA Dataset, Image Splitter, AI切图, 打标工具, Midjourney Grid, 16:9 crop">
     <meta name="author" content="RabbitLin">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     
     <style>
-        :root { --primary: #ffcc00; --bg: #121212; --panel: #1e1e1e; --text: #e0e0e0; --accent: #2d2d2d; --wechat: #09bb07; }
+        :root { --primary: #ffcc00; --bg: #121212; --panel: #1e1e1e; --text: #e0e0e0; --accent: #2d2d2d; --wechat: #09bb07; --border: #444; }
         body { font-family: 'Segoe UI', Roboto, "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; min-height: 100vh; }
         .container { background: var(--panel); padding: 30px; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.6); width: 1100px; max-width: 98%; margin-bottom: 40px; position: relative; }
         
@@ -30,7 +30,7 @@
         .btn-github span { color: var(--primary); }
         .btn-wechat { background: var(--wechat); color: #fff; }
 
-        /* Tutorial Steps (Updated for V13) */
+        /* Tutorial Steps */
         .tutorial-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 25px; background: #222; padding: 20px; border-radius: 8px; border: 1px solid #333; }
         .step-item { display: flex; align-items: flex-start; gap: 10px; }
         .step-num { background: var(--primary); color: #000; width: 24px; height: 24px; border-radius: 50%; text-align: center; font-size: 14px; font-weight: bold; line-height: 24px; flex-shrink: 0; }
@@ -43,14 +43,18 @@
         .left-col { flex: 2; min-width: 300px; }
         .right-col { flex: 1; min-width: 250px; display: flex; flex-direction: column; gap: 15px; }
 
-        /* Panel */
-        .panel { background: var(--accent); padding: 20px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #333; }
-        .panel-title { font-size: 14px; font-weight: bold; color: #fff; margin-bottom: 15px; border-bottom: 1px solid #444; padding-bottom: 8px; display: flex; justify-content: space-between; }
+        /* Panel Structure */
+        .panel { background: var(--accent); padding: 20px; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border); }
+        .panel-title { font-size: 15px; font-weight: bold; color: #fff; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+        
+        .panel-section { margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed #444; }
+        .panel-section:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+        .section-label { font-size: 12px; color: var(--primary); font-weight: bold; margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
         
         /* Inputs */
-        .control-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        label { font-size: 12px; color: #aaa; margin-bottom: 5px; display: block; font-weight: bold; }
-        input[type="number"], select { width: 100%; padding: 10px; background: #333; border: 1px solid #555; color: #fff; border-radius: 4px; font-weight: bold; font-size: 14px; box-sizing: border-box; }
+        .control-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        label { font-size: 12px; color: #aaa; margin-bottom: 4px; display: block; font-weight: bold; }
+        input[type="number"], select { width: 100%; padding: 8px; background: #333; border: 1px solid #555; color: #fff; border-radius: 4px; font-weight: bold; font-size: 13px; box-sizing: border-box; }
         input[type="number"]:focus, select:focus { border-color: var(--primary); outline: none; }
 
         /* Sliders */
@@ -92,11 +96,11 @@
 <body>
 
 <div class="container">
-    <h1>RabbitLin Smart Slicer <span>V13.0</span></h1>
+    <h1>RabbitLin Smart Slicer <span>V16.0</span></h1>
     <div class="subtitle">在线智能切图工具 (打标常用)</div>
 
     <div class="social-bar">
-        <a href="https://github.com/rabbitlin-web/Smart-Cropping-Tool-commonly-used-for-marking-" target="_blank" class="social-btn btn-github">
+        <a href="https://github.com/rabbitlin-web/smart-crop-tool" target="_blank" class="social-btn btn-github">
             <svg height="16" width="16" viewBox="0 0 16 16" fill="#ffffff"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
             Github 求 Star (✧ω✧)
         </a>
@@ -112,20 +116,19 @@
         </div>
         <div class="step-item">
             <div class="step-num">2</div>
-            <div class="step-text"><strong>Set & Align / 设置与对齐 (重要)</strong>
-                Method A: Input 'Gap' values manually.<br>
-                Method B: <span class="highlight">Drag the yellow handle</span> on the 1st red box to auto-resize!<br>
-                <strong>方法A:</strong> 手动输入间距数值。<br>
-                <strong>方法B:</strong> 直接<span class="highlight">拖动第一个红框的黄色手柄</span>，直观调整网格！
-            </div>
+            <div class="step-text"><strong>Configure / 配置结构</strong>Set Cols & Rows first.<br>先设置行数和列数。</div>
         </div>
         <div class="step-item">
             <div class="step-num">3</div>
-            <div class="step-text"><strong>Smart Fix / 智能重构</strong>Fix offset/composition issues.<br>利用缩放和锚点修复构图偏移。</div>
+            <div class="step-text"><strong>Align / 对齐 (二选一)</strong>
+                <span class="highlight">A. Drag (拖拽)</span> for visual fix.<br>
+                <span class="highlight">B. Input (输入)</span> for precise gap.<br>
+                拖拽黄色手柄，或者输入间距数值。
+            </div>
         </div>
         <div class="step-item">
             <div class="step-num">4</div>
-            <div class="step-text"><strong>Download / 下载</strong>Confirm preview & click Download.<br>确认无误后点击下载 ZIP。</div>
+            <div class="step-text"><strong>Export / 导出</strong>Select Resolution & Mode.<br>选择分辨率模式，点击下载。</div>
         </div>
     </div>
 
@@ -138,48 +141,104 @@
     <div class="main-layout">
         <div class="left-col">
             <div class="panel">
-                <div class="panel-title">1. Grid Structure / 切割结构</div>
-                <div class="control-grid">
-                    <div><label>Columns / 列数</label><input type="number" id="cols" value="5" min="1"></div>
-                    <div><label>Rows / 行数</label><input type="number" id="rows" value="3" min="1"></div>
-                    <div><label↔️ H-Gap / 水平间距 (px)</label><input type="number" id="gap-x" value="96" min="0"></div>
-                    <div><label>↕️ V-Gap / 垂直间距 (px)</label><input type="number" id="gap-y" value="96" min="0"></div>
+                <div class="panel-title">1. Grid Structure / 基础结构设置</div>
+                
+                <div class="panel-section">
+                    <span class="section-label">A. Step 1: Define Grid / 定义行列</span>
+                    <div class="control-grid">
+                        <div><label>Columns / 列数</label><input type="number" id="cols" value="5" min="1"></div>
+                        <div><label>Rows / 行数</label><input type="number" id="rows" value="3" min="1"></div>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <span class="section-label">B. Step 2: Alignment / 对齐方式 (二选一)</span>
+                    <div class="control-grid">
+                        <div style="border-right: 1px dashed #444; padding-right: 10px;">
+                            <label style="color:#fff;">Method 1: Visual Drag (推荐)</label>
+                            <label style="font-weight:normal; font-size:11px;">Lock Ratio & Drag Yellow Handle</label>
+                            <select id="aspect-ratio" style="margin-top:5px;">
+                                <option value="free">Free / 自由拖拽</option>
+                                <option value="1">1:1 Square / 正方形</option>
+                                <option value="1.7777777">16:9 Landscape / 横屏</option>
+                                <option value="0.5625">9:16 Portrait / 竖屏</option>
+                                <option value="1.3333333">4:3 Standard</option>
+                            </select>
+                        </div>
+                        <div style="padding-left: 5px;">
+                            <label style="color:#fff;">Method 2: Manual Input</label>
+                            <label style="font-weight:normal; font-size:11px;">Input Precise Gap Values</label>
+                            <div style="display:flex; gap:5px; margin-top:5px;">
+                                <input type="number" id="gap-x" value="96" min="0" placeholder="H-Gap">
+                                <input type="number" id="gap-y" value="96" min="0" placeholder="V-Gap">
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <div class="panel" style="border-color: #554400; background: #26241a;">
-                <div class="panel-title" style="color:#ffcc00;">2. Smart Re-composition / 智能重构</div>
-                <div class="slider-group">
-                    <label>Content Scale / 内容缩放: <span id="scale-val" class="range-value">100%</span></label>
-                    <input type="range" id="content-scale" min="50" max="150" value="100" step="1">
-                    <div style="font-size:11px; color:#777; margin-top:2px;">< 100%: Shrink (Add Borders) | > 100%: Zoom (Crop Edges)</div>
+                <div class="panel-title" style="color:#ffcc00;">2. Export Settings / 导出设置</div>
+                
+                <div class="panel-section">
+                    <span class="section-label">C. Step 3: Resolution & Mode / 分辨率</span>
+                    <div class="control-grid">
+                        <div>
+                            <label>Output Size / 输出分辨率 <span style="color:var(--primary);">(New!)</span></label>
+                            <select id="resize-opt">
+                                <option value="original">Original / 原始切片大小</option>
+                                <option value="1024x1024">1024 x 1024 (Square)</option>
+                                <option value="512x512">512 x 512 (Square)</option>
+                                <option value="768x768">768 x 768 (Square)</option>
+                                <option disabled>--- Landscape (16:9) ---</option>
+                                <option value="1280x720">1280 x 720 (HD)</option>
+                                <option value="1920x1080">1920 x 1080 (FHD)</option>
+                                <option value="1024x576">1024 x 576 (Web)</option>
+                                <option disabled>--- Portrait (9:16) ---</option>
+                                <option value="720x1280">720 x 1280 (HD)</option>
+                                <option value="576x1024">576 x 1024 (Web)</option>
+                                <option value="1080x1920">1080 x 1920 (FHD)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Resize Mode / 缩放模式</label>
+                            <select id="resize-mode">
+                                <option value="cover">Smart Crop (推荐! 不变形)</option>
+                                <option value="stretch">Stretch / 强制拉伸 (变形)</option>
+                                <option value="contain">Contain / 保留黑边</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
-                <div class="control-grid">
-                    <div>
-                        <label>Anchor / 对齐锚点</label>
-                        <select id="anchor-pos">
-                            <option value="center">Center / 居中 (Default)</option>
-                            <option value="top">Top / 顶端对齐</option>
-                            <option value="bottom">Bottom / 底端对齐</option>
-                            <option value="left">Left / 左侧对齐</option>
-                            <option value="right">Right / 右侧对齐</option>
-                        </select>
+
+                <div class="slider-group" style="margin-top:10px; border-top:1px dashed #444; padding-top:10px;">
+                    <label>Optional: Content Fine-tuning / 微调内容</label>
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        <input type="range" id="content-scale" min="50" max="150" value="100" step="1" style="flex:1;">
+                        <span id="scale-val" style="font-size:12px; font-weight:bold; width:40px;">100%</span>
                     </div>
-                    <div>
-                        <label>Output Size / 输出尺寸</label>
-                        <select id="resize-opt">
-                            <option value="original">Original / 原始大小</option>
-                            <option value="1024">Force 1024x1024</option>
-                            <option value="512">Force 512x512</option>
-                            <option value="768">Force 768x768</option>
-                        </select>
-                    </div>
+                    
+                    <label style="margin-top:10px;">Anchor Position / 锚点 (9-Point) <span style="color:var(--primary);">(Updated!)</span></label>
+                    <select id="anchor-pos">
+                        <option value="center">Center / 居中</option>
+                        <option disabled>--- Top ---</option>
+                        <option value="top-left">Top Left / 左上</option>
+                        <option value="top-center">Top Center / 顶部居中</option>
+                        <option value="top-right">Top Right / 右上</option>
+                        <option disabled>--- Middle ---</option>
+                        <option value="middle-left">Middle Left / 居左</option>
+                        <option value="middle-right">Middle Right / 居右</option>
+                        <option disabled>--- Bottom ---</option>
+                        <option value="bottom-left">Bottom Left / 左下</option>
+                        <option value="bottom-center">Bottom Center / 底部居中</option>
+                        <option value="bottom-right">Bottom Right / 右下</option>
+                    </select>
                 </div>
             </div>
             
             <button id="processBtn" class="main-btn" disabled>✅ Confirm & Download / 确认下载 ZIP</button>
             <div class="win-warning" id="win-alert">
-                ⚠️ <strong>Windows Users:</strong> Please use 7-Zip or Bandizip to extract. / 请使用 7-Zip 或 Bandizip 解压，避免报错。
+                ⚠️ <strong>Windows Users:</strong> Please use 7-Zip or Bandizip to extract.
             </div>
         </div>
 
@@ -187,16 +246,16 @@
             <div class="panel" style="padding:10px; margin:0;">
                 <div class="panel-title" style="border:none; margin-bottom:5px;">Single Preview / 单图预览</div>
                 <div class="single-preview-box">
-                    <span class="preview-label">Image 1 Preview</span>
+                    <span class="preview-label">Result Preview</span>
                     <img id="single-preview-img" alt="Waiting...">
                 </div>
                 <div style="text-align:center; margin-top:5px; font-size:12px; color:#888;">
-                    Final Size: <span id="final-res" style="color:#ffcc00;">-- x --</span>
+                    Final Output: <span id="final-res" style="color:#ffcc00;">-- x --</span>
                 </div>
             </div>
 
             <div class="panel" style="padding:10px; flex:1; display:flex; flex-direction:column;">
-                <div class="panel-title" style="border:none; margin-bottom:5px;">Alignment / 整体对齐</div>
+                <div class="panel-title" style="border:none; margin-bottom:5px;">Grid Alignment / 整体对齐</div>
                 <div style="font-size:11px; color:#666; margin-bottom:5px;">Drag yellow handle to adjust / 拖动黄色手柄调节</div>
                 <div id="canvas-container" style="flex:1;">
                     <canvas id="previewCanvas"></canvas>
@@ -207,7 +266,7 @@
 </div>
 
 <div class="footer">
-    Designed by <span class="author-tag">RabbitLin</span> | 微信: <span class="author-tag">Aa272123071</span>
+    Designed by <span class="author-tag">RabbitLin</span> | 微信号: <span class="author-tag">Aa272123071</span>
 </div>
 
 <div id="qrModal" class="modal-overlay" onclick="closeModal(event)">
@@ -229,8 +288,10 @@
         upload: document.getElementById('upload'),
         cols: document.getElementById('cols'), rows: document.getElementById('rows'),
         gapX: document.getElementById('gap-x'), gapY: document.getElementById('gap-y'),
+        aspectRatio: document.getElementById('aspect-ratio'),
         contentScale: document.getElementById('content-scale'), scaleVal: document.getElementById('scale-val'),
-        anchorPos: document.getElementById('anchor-pos'), resizeOpt: document.getElementById('resize-opt'),
+        anchorPos: document.getElementById('anchor-pos'), 
+        resizeOpt: document.getElementById('resize-opt'), resizeMode: document.getElementById('resize-mode'),
         processBtn: document.getElementById('processBtn'), canvas: document.getElementById('previewCanvas'),
         singlePreview: document.getElementById('single-preview-img'), finalRes: document.getElementById('final-res'),
         fileInfo: document.getElementById('file-info'), winAlert: document.getElementById('win-alert')
@@ -238,9 +299,9 @@
     const ctx = el.canvas.getContext('2d');
     let state = { img: new Image(), isLoaded: false, cellW: 0, cellH: 0, isDragging: false, dragStartPos: {x:0,y:0}, initialCellSize: {w:0,h:0}, scaleFactor: 1 };
 
-    const inputs = [el.cols, el.rows, el.gapX, el.gapY, el.contentScale, el.anchorPos, el.resizeOpt];
+    const inputs = [el.cols, el.rows, el.gapX, el.gapY, el.aspectRatio, el.contentScale, el.anchorPos, el.resizeOpt, el.resizeMode];
     inputs.forEach(input => input.addEventListener('input', () => {
-        el.scaleVal.innerText = el.contentScale.value + '%';
+        if(input === el.contentScale) el.scaleVal.innerText = el.contentScale.value + '%';
         updateCalculation(false);
     }));
 
@@ -268,15 +329,30 @@
         const zip = new JSZip();
         const folder = zip.folder("RabbitLin_Smart_Crops");
         const originalText = el.processBtn.innerText;
-        el.processBtn.innerText = "⏳ Processing / 处理中...";
+        el.processBtn.innerText = "⏳ Processing...";
         el.processBtn.disabled = true;
 
         const rawW = state.cellW, rawH = state.cellH;
+        
+        // --- V16 New Resize Parsing Logic ---
+        const resizeVal = el.resizeOpt.value;
+        let targetW = rawW, targetH = rawH;
+
+        if (resizeVal !== 'original') {
+            if (resizeVal.includes('x')) {
+                const parts = resizeVal.split('x');
+                targetW = parseInt(parts[0]);
+                targetH = parseInt(parts[1]);
+            } else {
+                // Fallback for old single values
+                const s = parseInt(resizeVal);
+                targetW = s; targetH = s;
+            }
+        }
+
         const scale = parseInt(el.contentScale.value) / 100;
         const anchor = el.anchorPos.value;
-        const resizeTarget = el.resizeOpt.value;
-        let targetW = rawW, targetH = rawH;
-        if (resizeTarget !== 'original') { targetW = parseInt(resizeTarget); targetH = parseInt(resizeTarget); }
+        const mode = el.resizeMode.value;
 
         for (let y = 0; y < rows; y++) {
             for (let x = 0; x < cols; x++) {
@@ -286,14 +362,48 @@
                 pCtx.fillStyle = '#000'; pCtx.fillRect(0, 0, targetW, targetH);
                 pCtx.imageSmoothingEnabled = true; pCtx.imageSmoothingQuality = 'high';
                 
-                const srcX = x * (rawW + gapX), srcY = y * (rawH + gapY);
-                const drawW = targetW * scale, drawH = targetH * scale;
-                let drawX = (targetW - drawW)/2, drawY = (targetH - drawH)/2;
-                
-                if (anchor === 'left') drawX = 0; else if (anchor === 'right') drawX = targetW - drawW;
-                if (anchor === 'top') drawY = 0; else if (anchor === 'bottom') drawY = targetH - drawH;
+                const srcX = x * (rawW + gapX);
+                const srcY = y * (rawH + gapY);
+
+                // Extraction canvas
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = rawW; tempCanvas.height = rawH;
+                const tempCtx = tempCanvas.getContext('2d');
+
+                let drawW = targetW, drawH = targetH;
+                let drawX = 0, drawY = 0;
+
+                if (mode === 'stretch') {
+                    drawW = targetW * scale; drawH = targetH * scale;
+                } else if (mode === 'cover' || mode === 'contain') {
+                    const srcRatio = rawW / rawH;
+                    const tgtRatio = targetW / targetH;
+                    let renderScale = 1;
+                    if (mode === 'cover') {
+                        if (srcRatio > tgtRatio) renderScale = targetH / rawH;
+                        else renderScale = targetW / rawW;
+                    } else { // contain
+                        if (srcRatio > tgtRatio) renderScale = targetW / rawW;
+                        else renderScale = targetH / rawH;
+                    }
+                    renderScale *= scale;
+                    drawW = rawW * renderScale;
+                    drawH = rawH * renderScale;
+                }
+
+                // --- V16 New Anchor Logic (9-Point) ---
+                // Horizontal
+                if (anchor.includes('left')) drawX = 0;
+                else if (anchor.includes('right')) drawX = targetW - drawW;
+                else drawX = (targetW - drawW) / 2; // centers
+
+                // Vertical
+                if (anchor.includes('top')) drawY = 0;
+                else if (anchor.includes('bottom')) drawY = targetH - drawH;
+                else drawY = (targetH - drawH) / 2; // centers
 
                 pCtx.drawImage(state.img, srcX, srcY, rawW, rawH, drawX, drawY, drawW, drawH);
+                
                 const dataUrl = pCanvas.toDataURL('image/png');
                 folder.file(`crop_${y}_${x}.png`, dataUrl.replace(/^data:image\/(png|jpg);base64,/, ""), {base64: true});
             }
@@ -321,6 +431,7 @@
         drawGridPreview(cols, rows, gapX, gapY);
         updateSinglePreview(0, 0, gapX, gapY);
     }
+
     function drawGridPreview(cols, rows, gapX, gapY) {
         el.canvas.width = state.img.width; el.canvas.height = state.img.height;
         state.scaleFactor = el.canvas.clientWidth / state.img.width;
@@ -331,48 +442,106 @@
             for (let x = 0; x < cols; x++) {
                 const posX = x * (state.cellW + gapX), posY = y * (state.cellH + gapY);
                 ctx.strokeStyle = '#ff0000'; ctx.strokeRect(posX, posY, state.cellW, state.cellH);
-                // Draw Handle only on 0,0
                 if (x === 0 && y === 0) { ctx.fillStyle = '#ffcc00'; const h = lineWidth * 4; ctx.fillRect(posX + state.cellW - h, posY + state.cellH - h, h, h); }
             }
         }
     }
+
     function updateSinglePreview(x, y, gapX, gapY) {
         const rawW = state.cellW, rawH = state.cellH;
-        const scale = parseInt(el.contentScale.value) / 100;
-        const anchor = el.anchorPos.value;
-        const resizeTarget = el.resizeOpt.value;
+        // Parsing V16
+        const resizeVal = el.resizeOpt.value;
         let targetW = rawW, targetH = rawH;
-        if (resizeTarget !== 'original') { targetW = parseInt(resizeTarget); targetH = parseInt(resizeTarget); }
+        if (resizeVal !== 'original') {
+            if (resizeVal.includes('x')) {
+                const parts = resizeVal.split('x');
+                targetW = parseInt(parts[0]);
+                targetH = parseInt(parts[1]);
+            } else {
+                const s = parseInt(resizeVal);
+                targetW = s; targetH = s;
+            }
+        }
         el.finalRes.innerText = `${targetW} x ${targetH}`;
+
         const pCanvas = document.createElement('canvas');
         pCanvas.width = targetW; pCanvas.height = targetH;
         const pCtx = pCanvas.getContext('2d');
         pCtx.fillStyle = '#000'; pCtx.fillRect(0, 0, targetW, targetH);
         pCtx.imageSmoothingEnabled = true; pCtx.imageSmoothingQuality = 'high';
-        const drawW = targetW * scale, drawH = targetH * scale;
-        let drawX = (targetW-drawW)/2, drawY = (targetH-drawH)/2;
-        if (anchor === 'left') drawX = 0; else if (anchor === 'right') drawX = targetW - drawW;
-        if (anchor === 'top') drawY = 0; else if (anchor === 'bottom') drawY = targetH - drawH;
+
+        const scale = parseInt(el.contentScale.value) / 100;
+        const anchor = el.anchorPos.value;
+        const mode = el.resizeMode.value;
+
+        let drawW = targetW, drawH = targetH;
+        let drawX = 0, drawY = 0;
+
+        if (mode === 'stretch') {
+            drawW = targetW * scale; drawH = targetH * scale;
+        } else if (mode === 'cover' || mode === 'contain') {
+            const srcRatio = rawW / rawH;
+            const tgtRatio = targetW / targetH;
+            let renderScale = 1;
+            if (mode === 'cover') {
+                if (srcRatio > tgtRatio) renderScale = targetH / rawH;
+                else renderScale = targetW / rawW;
+            } else { 
+                if (srcRatio > tgtRatio) renderScale = targetW / rawW;
+                else renderScale = targetH / rawH;
+            }
+            renderScale *= scale;
+            drawW = rawW * renderScale;
+            drawH = rawH * renderScale;
+        }
+
+        if (anchor.includes('left')) drawX = 0;
+        else if (anchor.includes('right')) drawX = targetW - drawW;
+        else drawX = (targetW - drawW) / 2;
+
+        if (anchor.includes('top')) drawY = 0;
+        else if (anchor.includes('bottom')) drawY = targetH - drawH;
+        else drawY = (targetH - drawH) / 2;
+
         pCtx.drawImage(state.img, x*(rawW+gapX), y*(rawH+gapY), rawW, rawH, drawX, drawY, drawW, drawH);
         el.singlePreview.src = pCanvas.toDataURL();
     }
+
     function getPos(e) { const r = el.canvas.getBoundingClientRect(); return { x: (e.clientX - r.left)/state.scaleFactor, y: (e.clientY - r.top)/state.scaleFactor }; }
+    
     el.canvas.addEventListener('mousedown', (e) => {
         if (!state.isLoaded) return;
         const p = getPos(e), z = Math.max(40, state.img.width/30);
-        if (Math.abs(p.x - state.cellW) < z && Math.abs(p.y - state.cellH) < z) { state.isDragging = true; state.dragStartPos = p; state.initialCellSize = { w: state.cellW, h: state.cellH }; el.canvas.style.cursor = 'nwse-resize'; }
+        if (Math.abs(p.x - state.cellW) < z && Math.abs(p.y - state.cellH) < z) { 
+            state.isDragging = true; 
+            state.dragStartPos = p; 
+            state.initialCellSize = { w: state.cellW, h: state.cellH }; 
+            el.canvas.style.cursor = 'nwse-resize'; 
+        }
     });
+
     el.canvas.addEventListener('mousemove', (e) => {
         if (!state.isDragging) return;
         const p = getPos(e), cols = parseInt(el.cols.value)||1, rows = parseInt(el.rows.value)||1;
-        let nw = state.initialCellSize.w + (p.x - state.dragStartPos.x), nh = state.initialCellSize.h + (p.y - state.dragStartPos.y);
-        state.cellW = Math.floor(Math.max(50, Math.min(nw, state.img.width/cols)));
-        state.cellH = Math.floor(Math.max(50, Math.min(nh, state.img.height/rows)));
+        
+        let newW = state.initialCellSize.w + (p.x - state.dragStartPos.x);
+        let newH = state.initialCellSize.h + (p.y - state.dragStartPos.y);
+        
+        const ratioVal = el.aspectRatio.value;
+        if (ratioVal !== 'free') {
+            const r = parseFloat(ratioVal);
+            newH = Math.round(newW / r);
+        }
+
+        newW = Math.floor(Math.max(50, Math.min(newW, state.img.width/cols)));
+        newH = Math.floor(Math.max(50, Math.min(newH, state.img.height/rows)));
+        
+        state.cellW = newW;
+        state.cellH = newH;
         updateCalculation(true);
     });
+
     document.addEventListener('mouseup', () => { state.isDragging = false; el.canvas.style.cursor = 'crosshair'; });
 </script>
 </body>
 </html>
-
-

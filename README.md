@@ -3,9 +3,6 @@
 You can directly open the web page to use it for free, and its function is to upload grid puzzles, align, split, and export materials in batches with one click. To address the issue that raw images like Banana Pro tend to be off-center, you can set Content Scaling and Alignment Anchors. For example, if the image content is too large, it can be set to 90% zoom; If the top of the head is cut, select Bottom Alignment to lower the frame. Click directly on the following webpage to use:[ [https://rabbitlin-web.github.io/Smart-Cropping-Tool-commonly-used-for-marking-/](https://rabbitlin-web.github.io/smart-crop-tool/)](https://rabbitlin-web.github.io/smart-crop-tool/)
 If it helps you, please click on a little star~~
 
-这是一份为您定制的 **RabbitLin Smart Slicer 用户帮助手册 (User Manual)**。
-
-采用了**中英文对照**的排版，清晰易读。您可以将这些内容放在 GitHub 的 `README.md` 中，或者做成一个单独的 `help.html` 页面链接到主页上。
 
 -----
 **更新--** **Update--**

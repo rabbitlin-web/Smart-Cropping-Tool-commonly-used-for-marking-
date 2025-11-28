@@ -3,12 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RabbitLin Smart Slicer - AI Training Data Tool / 在线智能切图工具(V30 模拟人工版)</title>
     
-    <title>RabbitLin Smart Slicer - AI Training Data Tool / 在线智能切图工具(打标常用)</title>
-    <meta name="description" content="RabbitLin V23.0: The ultimate AI image slicer. Features GIF support, drag alignment, smart re-composition, aspect ratio locking, and batch export. 专为AI训练设计，支持GIF动图、比例锁定拖拽、智能重构、批量导出。">
-    <meta name="keywords" content="RabbitLin, AI Slicer, LoRA Dataset, Image Splitter, AI切图, 打标工具, Midjourney Grid, GIF Slicer">
-    <meta name="author" content="RabbitLin">
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/buzzfeed/libgif-js@master/libgif.js"></script>
@@ -19,7 +15,6 @@
         body { font-family: 'Segoe UI', Roboto, "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; align-items: center; padding: 20px; min-height: 100vh; }
         .container { background: var(--panel); padding: 30px; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.6); width: 1100px; max-width: 98%; margin-bottom: 40px; position: relative; }
         
-        /* Header */
         h1 { color: #fff; margin: 0; text-align: center; font-size: 26px; font-weight: 600; margin-bottom: 10px; }
         h1 span { color: var(--primary); font-size: 22px; }
         .subtitle { text-align: center; color: #888; font-size: 14px; margin-bottom: 20px; }
@@ -32,7 +27,7 @@
         .btn-github span { color: var(--primary); }
         .btn-wechat { background: var(--wechat); color: #fff; }
 
-        /* Tutorial Steps (Explicitly mentioning 2 methods) */
+        /* Tutorial Steps */
         .tutorial-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 25px; background: #222; padding: 20px; border-radius: 8px; border: 1px solid #333; }
         .step-item { display: flex; align-items: flex-start; gap: 10px; }
         .step-num { background: var(--primary); color: #000; width: 24px; height: 24px; border-radius: 50%; text-align: center; font-size: 14px; font-weight: bold; line-height: 24px; flex-shrink: 0; }
@@ -47,11 +42,10 @@
         .panel { background: var(--accent); padding: 20px; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border); }
         .panel-title { font-size: 15px; font-weight: bold; color: #fff; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
         
-        /* Method Labels */
         .method-label { font-size: 12px; color: #888; margin-top: 10px; margin-bottom: 5px; font-weight: bold; display: block; }
         .method-highlight { color: var(--primary); }
 
-        /* Inputs & Controls */
+        /* Inputs */
         .control-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         label { font-size: 12px; color: #aaa; margin-bottom: 4px; display: block; font-weight: bold; }
         input[type="number"], select { width: 100%; padding: 8px; background: #333; border: 1px solid #555; color: #fff; border-radius: 4px; font-weight: bold; font-size: 13px; box-sizing: border-box; }
@@ -72,7 +66,7 @@
         canvas { display: block; max-width: 100%; height: auto; }
         .single-preview-box { background: #000; border: 1px solid #555; border-radius: 4px; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 200px; position: relative; }
         .single-preview-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
-        .preview-label { position: absolute; top: 5px; left: 5px; font-size: 12px; color: rgba(255,255,255,0.7); background: rgba(0,0,0,0.6); padding: 2px 5px; border-radius: 3px; }
+        
         .new-tag { background: #ff0055; color: #fff; padding: 2px 6px; border-radius: 3px; font-size: 10px; margin-left: 8px; vertical-align: middle; }
 
         /* Progress & Warnings */
@@ -83,6 +77,12 @@
         #debug-log { color: #ff5555; font-size: 11px; font-family: monospace; margin-top: 5px; text-align: center; min-height: 15px; }
         .win-warning { margin-top: 15px; padding: 12px; background: #441818; border: 1px solid #883333; border-radius: 6px; text-align: center; color: #ff8888; font-size: 13px; line-height: 1.5; }
 
+        /* Hidden GIF Source - CRITICAL CHANGE: Must be visible but tiny for libgif to work in batch */
+        #gif-source-container { position: absolute; top: 0; left: 0; width: 1px; height: 1px; opacity: 0.01; overflow: hidden; pointer-events: none; }
+
+        .footer { margin-top: auto; padding-top: 20px; text-align: center; color: #666; font-size: 13px; border-top: 1px solid #333; width: 100%; }
+        .author-tag { color: var(--primary); font-weight: bold; }
+        
         /* Modal */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 999; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
         .modal-box { background: #fff; padding: 20px; border-radius: 12px; text-align: center; max-width: 90%; width: 350px; position: relative; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
@@ -91,18 +91,12 @@
         .modal-text { color: #333; margin-top: 10px; font-weight: bold; font-size: 16px; }
         .modal-sub { color: #666; font-size: 13px; margin-bottom: 10px; }
         @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-        /* Hidden GIF Source (Critical Fix) */
-        #gif-source-container { position: absolute; top: 0; left: 0; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none; }
-
-        .footer { margin-top: auto; padding-top: 20px; text-align: center; color: #666; font-size: 13px; border-top: 1px solid #333; width: 100%; }
-        .author-tag { color: var(--primary); font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>RabbitLin Smart Slicer <span>V23.0</span></h1>
+    <h1>RabbitLin Smart Slicer <span>V30.0 (Visual Batch)</span></h1>
     <div class="subtitle">在线智能切图工具 (打标/动图/全能版)</div>
 
     <div class="social-bar">
@@ -118,7 +112,7 @@
     <div class="tutorial-steps">
         <div class="step-item">
             <div class="step-num">1</div>
-            <div class="step-text"><strong>Upload / 上传</strong>JPG, PNG, GIF supported.<br>点击虚线框上传拼图。</div>
+            <div class="step-text"><strong>Upload / 上传</strong>JPG, PNG, GIF supported.<br>批量上传请按住Ctrl/Shift。</div>
         </div>
         <div class="step-item">
             <div class="step-num">2</div>
@@ -138,9 +132,9 @@
     </div>
 
     <div class="upload-area" onclick="document.getElementById('upload').click()">
-        <input type="file" id="upload" accept="image/jpeg, image/png, image/webp, image/gif" style="display: none;">
+        <input type="file" id="upload" accept="image/jpeg, image/png, image/webp, image/gif" multiple style="display: none;">
         <div style="font-size: 18px; margin-bottom: 5px;">📂 <strong>Click to Upload / 点击上传 (JPG/PNG/GIF)</strong></div>
-        <div id="file-info" style="font-size: 13px; color: #888;">Supports Animated GIF</div>
+        <div id="file-info" style="font-size: 13px; color: #888;">Supports Multiple Files & GIFs</div>
     </div>
 
     <div id="gif-source-container">
@@ -305,8 +299,10 @@
     };
     const ctx = el.canvas.getContext('2d');
     
+    // Batch State
     let state = { 
-        img: new Image(), isLoaded: false, isGif: false, superGif: null,
+        files: [], currentImg: new Image(), 
+        isLoaded: false, isGif: false, superGif: null,
         cellW: 0, cellH: 0, isDragging: false, dragStartPos: {x:0,y:0}, initialCellSize: {w:0,h:0}, scaleFactor: 1 
     };
 
@@ -316,231 +312,300 @@
         updateCalculation(false);
     }));
 
+    // --- UPLOAD HANDLER ---
     el.upload.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
+        const files = Array.from(e.target.files);
+        if (files.length === 0) return;
+        state.files = files;
         el.debugLog.innerText = "";
-        state.isGif = file.type === 'image/gif';
+        
+        // Preview First File
+        const firstFile = files[0];
+        state.isGif = firstFile.type === 'image/gif';
         el.gifTag.style.display = state.isGif ? 'inline-block' : 'none';
+        el.fileInfo.innerText = `Selected ${files.length} file(s) / 已选 ${files.length} 个文件`;
         
         const reader = new FileReader();
         reader.onload = (event) => {
             const dataUrl = event.target.result;
+            // Always set img for static preview logic
+            state.img = new Image();
             state.img.onload = () => {
                 state.isLoaded = true;
                 el.processBtn.disabled = false;
-                el.fileInfo.innerHTML = `Loaded: <span style="color:#ffcc00">${state.img.width} x ${state.img.height}</span> px` + (state.isGif ? " (GIF)" : "");
                 updateCalculation(false);
             }
             state.img.src = dataUrl;
 
+            // If GIF, we need to preload it into the hidden img tag for LibGif to find later
             if(state.isGif) {
                 el.gifSource.src = dataUrl;
-                try {
-                    state.superGif = new SuperGif({ gif: el.gifSource });
-                    state.superGif.load(() => { updateCalculation(false); });
-                } catch(err) { el.debugLog.innerText = "GIF Parse Err: " + err.message; }
             }
         }
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(firstFile);
     });
 
-    function getDrawParams() {
-        const resizeVal = el.resizeOpt.value;
-        let targetW = state.cellW, targetH = state.cellH;
-        if (resizeVal !== 'original') {
-            if (resizeVal.includes('x')) {
-                const parts = resizeVal.split('x');
-                targetW = parseInt(parts[0]); targetH = parseInt(parts[1]);
-            } else { const s = parseInt(resizeVal); targetW = s; targetH = s; }
-        }
-        targetW = Math.max(1, targetW); targetH = Math.max(1, targetH);
-        return {
-            rawW: state.cellW, rawH: state.cellH, targetW, targetH,
-            scale: parseInt(el.contentScale.value) / 100,
-            anchor: el.anchorPos.value, mode: el.resizeMode.value, srcX: 0, srcY: 0
-        };
-    }
-
-    function drawFrameToCanvas(sourceCanvas, targetCanvas, params) {
-        const { rawW, rawH, targetW, targetH, srcX, srcY, scale, anchor, mode } = params;
-        const pCtx = targetCanvas.getContext('2d');
-        pCtx.fillStyle = '#000'; pCtx.fillRect(0, 0, targetW, targetH);
-        pCtx.imageSmoothingEnabled = true; pCtx.imageSmoothingQuality = 'high';
-
-        let drawW = targetW, drawH = targetH, drawX = 0, drawY = 0;
-        if (mode === 'stretch') { drawW = targetW * scale; drawH = targetH * scale; } 
-        else {
-            const srcR = rawW/rawH, tgtR = targetW/targetH;
-            let rScale = 1;
-            if (mode === 'cover') rScale = (srcR > tgtR) ? targetH/rawH : targetW/rawW;
-            else rScale = (srcR > tgtR) ? targetW/rawW : targetH/rawH;
-            rScale *= scale; drawW = rawW*rScale; drawH = rawH*rScale;
-        }
-        
-        if (anchor.includes('left')) drawX = 0; 
-        else if (anchor.includes('right')) drawX = targetW-drawW; 
-        else drawX = (targetW-drawW)/2;
-
-        if (anchor.includes('top')) drawY = 0; 
-        else if (anchor.includes('bottom')) drawY = targetH-drawH; 
-        else drawY = (targetH-drawH)/2;
-
-        if(rawW > 0 && rawH > 0) {
-            try { pCtx.drawImage(sourceCanvas, srcX, srcY, rawW, rawH, drawX, drawY, drawW, drawH); } 
-            catch(e) { console.warn(e); }
-        }
-    }
-
+    // --- MAIN PROCESSING (SERIAL / VISUAL SIMULATION) ---
     el.processBtn.addEventListener('click', async () => {
-        if (!state.isLoaded) return;
+        if (!state.isLoaded || state.files.length === 0) return;
         el.processBtn.disabled = true;
         el.progSection.style.display = 'block';
+        el.debugLog.innerText = "";
+        
+        const mainZip = new JSZip();
+        
         try {
-            if(state.isGif) await processGifDownload();
-            else await processStaticDownload();
+            for (let i = 0; i < state.files.length; i++) {
+                const file = state.files[i];
+                const isGif = file.type === 'image/gif';
+                el.statusText.innerText = `Processing ${i+1}/${state.files.length}: ${file.name}`;
+                el.progFill.style.width = ((i / state.files.length) * 100) + '%';
+                
+                // Read File
+                const dataUrl = await readFileAsDataURL(file);
+                
+                // VISUAL UPDATE: Load this image into state.img so user sees it "working"
+                await new Promise(r => {
+                    state.img.src = dataUrl;
+                    state.img.onload = r;
+                });
+                updateCalculation(false); // Update preview to current file
+                await new Promise(r => setTimeout(r, 100)); // Small visual pause
+
+                const targetZip = (state.files.length > 1) ? mainZip.folder(file.name.split('.')[0]) : mainZip;
+                
+                if (isGif) {
+                    await processGifBatch(dataUrl, targetZip);
+                } else {
+                    await processStaticBatch(dataUrl, targetZip);
+                }
+            }
+            
+            el.statusText.innerText = "Zipping All / 正在打包...";
+            el.progFill.style.width = "100%";
+            mainZip.generateAsync({type:"blob"}).then((content) => {
+                saveAs(content, "RabbitLin_Batch_Dataset.zip");
+                el.processBtn.innerText = "✅ Download Again / 再次下载";
+                el.processBtn.disabled = false;
+                el.statusText.innerText = "Done!";
+            });
+            
         } catch(err) {
             el.debugLog.innerText = "Error: " + err.message;
             el.processBtn.disabled = false;
         }
     });
 
-    async function processStaticDownload() {
-        el.statusText.innerText = "Processing Images / 处理中...";
-        el.progFill.style.width = "20%";
-        await new Promise(r => setTimeout(r, 50));
-        
-        const cols = parseInt(el.cols.value), rows = parseInt(el.rows.value);
-        let gapX = parseInt(el.gapX.value), gapY = parseInt(el.gapY.value);
-        const zip = new JSZip();
-        const folder = zip.folder("Smart_Crops");
-        const params = getDrawParams();
-
-        for (let y = 0; y < rows; y++) {
-            for (let x = 0; x < cols; x++) {
-                const pCanvas = document.createElement('canvas');
-                pCanvas.width = params.targetW; pCanvas.height = params.targetH;
-                params.srcX = x * (state.cellW + gapX); params.srcY = y * (state.cellH + gapY);
-                drawFrameToCanvas(state.img, pCanvas, params);
-                const dataUrl = pCanvas.toDataURL('image/png');
-                folder.file(`crop_${y}_${x}.png`, dataUrl.replace(/^data:image\/(png|jpg);base64,/, ""), {base64: true});
-            }
-        }
-        el.statusText.innerText = "Zipping / 打包中...";
-        el.progFill.style.width = "100%";
-        zip.generateAsync({type:"blob"}).then((content) => {
-            saveAs(content, "static_dataset.zip");
-            el.processBtn.innerText = "✅ Download Again / 再次下载";
-            el.processBtn.disabled = false;
+    function readFileAsDataURL(file) {
+        return new Promise(resolve => {
+            const r = new FileReader();
+            r.onload = e => resolve(e.target.result);
+            r.readAsDataURL(file);
         });
     }
 
-    async function processGifDownload() {
-        if(!state.superGif) throw new Error("GIF Lib not initialized.");
+    // --- DRAWING HELPERS ---
+    function getDrawParams(refImg) {
+        const refW = state.img.width; 
+        const refH = state.img.height;
+        const curW = refImg.width;
+        const curH = refImg.height;
+        // Batch scaling logic: scale cellW based on current img size
+        const ratioW = curW / refW || 1;
+        const ratioH = curH / refH || 1;
         
-        const cols = parseInt(el.cols.value), rows = parseInt(el.rows.value);
-        let gapX = parseInt(el.gapX.value), gapY = parseInt(el.gapY.value);
-        const zip = new JSZip();
-        const folder = zip.folder("GIF_Crops");
-        const params = getDrawParams();
+        const resizeVal = el.resizeOpt.value;
+        let targetW = state.cellW * ratioW, targetH = state.cellH * ratioH; 
         
-        let frameLength = 0;
-        try { frameLength = state.superGif.get_length(); } catch(e) { frameLength = 10; }
-        
-        const totalGIFs = rows * cols;
-        let encoders = [];
-        for(let i=0; i<totalGIFs; i++) {
-            encoders.push(new GIF({ workers: 2, quality: 10, workerScript: workerUrl, width: params.targetW, height: params.targetH }));
+        if (resizeVal !== 'original') {
+            if (resizeVal.includes('x')) {
+                const parts = resizeVal.split('x'); targetW = parseInt(parts[0]); targetH = parseInt(parts[1]);
+            } else { const s = parseInt(resizeVal); targetW = s; targetH = s; }
         }
+        
+        targetW = Math.max(1, targetW); targetH = Math.max(1, targetH);
+        
+        return {
+            rawW: state.cellW * ratioW, 
+            rawH: state.cellH * ratioH, 
+            targetW, targetH,
+            scale: parseInt(el.contentScale.value) / 100,
+            anchor: el.anchorPos.value, mode: el.resizeMode.value, srcX: 0, srcY: 0,
+            ratioW, ratioH
+        };
+    }
 
-        for (let f = 0; f < frameLength; f++) {
-            state.superGif.move_to(f);
-            const frameCanvas = state.superGif.get_canvas();
-            el.statusText.innerText = `Parsing Frame ${f+1} / ${frameLength}`;
-            el.progFill.style.width = Math.round((f/frameLength)*40) + '%';
-            await new Promise(r => setTimeout(r, 0));
+    function drawFrameToCanvas(src, tgt, p) {
+        const ctx = tgt.getContext('2d');
+        ctx.fillStyle='#000'; ctx.fillRect(0,0,p.targetW,p.targetH);
+        let dW=p.targetW, dH=p.targetH, dX=0, dY=0;
+        
+        if (p.mode === 'stretch') { 
+            dW = p.targetW * p.scale; dH = p.targetH * p.scale; 
+        } else {
+            const sR = p.rawW/p.rawH, tR = p.targetW/p.targetH;
+            let rScale = 1;
+            if (p.mode === 'cover') rScale = (sR > tR) ? p.targetH/p.rawH : p.targetW/p.rawW;
+            else rScale = (sR > tR) ? p.targetW/p.rawW : p.targetH/p.rawH;
+            rScale *= p.scale; dW = p.rawW*rScale; dH = p.rawH*rScale;
+        }
+        
+        if (p.anchor.includes('left')) dX=0; 
+        else if (p.anchor.includes('right')) dX=p.targetW-dW; 
+        else dX=(p.targetW-dW)/2;
 
-            const delay = 100; 
-            let cellIndex = 0;
-            for (let y = 0; y < rows; y++) {
-                for (let x = 0; x < cols; x++) {
-                    params.srcX = x * (state.cellW + gapX); params.srcY = y * (state.cellH + gapY);
-                    const tempCanvas = document.createElement('canvas');
-                    tempCanvas.width = params.targetW; tempCanvas.height = params.targetH;
-                    drawFrameToCanvas(frameCanvas, tempCanvas, params);
-                    encoders[cellIndex].addFrame(tempCanvas, {delay: delay, copy: true});
-                    cellIndex++;
+        if (p.anchor.includes('top')) dY=0; 
+        else if (p.anchor.includes('bottom')) dY=p.targetH-dH; 
+        else dY=(p.targetH-dH)/2;
+
+        if(p.rawW > 0 && p.rawH > 0) {
+            try { ctx.drawImage(src, p.srcX, p.srcY, p.rawW, p.rawH, dX, dY, dW, dH); } 
+            catch(e) { console.warn(e); }
+        }
+    }
+
+    async function processStaticBatch(dataUrl, zipFolder) {
+        return new Promise(resolve => {
+            const img = new Image();
+            img.onload = async () => {
+                const p = getDrawParams(img);
+                const cols = parseInt(el.cols.value), rows = parseInt(el.rows.value);
+                const gapX = parseInt(el.gapX.value) * p.ratioW;
+                const gapY = parseInt(el.gapY.value) * p.ratioH;
+
+                for (let y = 0; y < rows; y++) {
+                    for (let x = 0; x < cols; x++) {
+                        const cvs = document.createElement('canvas');
+                        cvs.width = p.targetW; cvs.height = p.targetH;
+                        p.srcX = x * (p.rawW + gapX); p.srcY = y * (p.rawH + gapY);
+                        drawFrameToCanvas(img, cvs, p);
+                        zipFolder.file(`crop_${y}_${x}.png`, cvs.toDataURL().replace(/^data:image\/(png|jpg);base64,/, ""), {base64: true});
+                    }
                 }
-            }
-        }
-
-        el.statusText.innerText = "Encoding GIFs / 编码动图...";
-        let renderedCount = 0;
-        const renderPromise = new Promise((resolve) => {
-            for(let i=0; i<encoders.length; i++) {
-                encoders[i].on('finished', function(blob) {
-                    const r = Math.floor(i / cols); const c = i % cols;
-                    folder.file(`crop_${r}_${c}.gif`, blob);
-                    renderedCount++;
-                    const prog = 40 + Math.round((renderedCount / totalGIFs) * 60);
-                    el.progFill.style.width = prog + '%';
-                    el.statusText.innerText = `Encoded ${renderedCount} / ${totalGIFs}`;
-                    if(renderedCount === totalGIFs) resolve();
-                });
-                encoders[i].render();
-            }
-        });
-
-        await renderPromise;
-        el.statusText.innerText = "Zipping / 打包中...";
-        zip.generateAsync({type:"blob"}).then((content) => {
-            saveAs(content, "gif_dataset.zip");
-            el.processBtn.innerText = "✅ Download Again / 再次下载";
-            el.processBtn.disabled = false;
+                resolve();
+            };
+            img.src = dataUrl;
         });
     }
 
+    // --- THE FIXED GIF LOGIC ---
+    async function processGifBatch(dataUrl, zipFolder) {
+        // 1. Force load image into the VISIBLE DOM element #gif-source
+        // This is crucial for LibGif to detect size
+        el.gifSource.src = dataUrl;
+        await new Promise(r => el.gifSource.onload = r);
+
+        return new Promise(resolve => {
+            try {
+                // 2. Initialize SuperGif on the visible element
+                const superGif = new SuperGif({ gif: el.gifSource });
+                superGif.load(async () => {
+                    const len = superGif.get_length();
+                    const canvas = superGif.get_canvas(); // The canvas libgif draws to
+                    
+                    const p = getDrawParams(canvas); 
+                    const cols = parseInt(el.cols.value), rows = parseInt(el.rows.value);
+                    const gapX = parseInt(el.gapX.value) * p.ratioW;
+                    const gapY = parseInt(el.gapY.value) * p.ratioH;
+                    
+                    // Create Encoders
+                    let encoders = [];
+                    for(let i=0; i<rows*cols; i++) encoders.push(new GIF({workers:2, quality:10, workerScript:workerUrl, width:p.targetW, height:p.targetH}));
+
+                    // Iterate Frames
+                    for(let f=0; f<len; f++) {
+                        superGif.move_to(f);
+                        const frameCvs = superGif.get_canvas();
+                        
+                        // Give browser time to breathe (Prevent hanging)
+                        if(f % 5 === 0) {
+                            el.statusText.innerText = `GIF Frame ${f+1}/${len}`;
+                            await new Promise(r => setTimeout(r, 0));
+                        }
+
+                        let idx=0;
+                        for(let y=0; y<rows; y++) {
+                            for(let x=0; x<cols; x++) {
+                                p.srcX = x*(p.rawW+gapX); p.srcY = y*(p.rawH+gapY);
+                                const tCvs = document.createElement('canvas'); tCvs.width=p.targetW; tCvs.height=p.targetH;
+                                drawFrameToCanvas(frameCvs, tCvs, p);
+                                encoders[idx].addFrame(tCvs, {delay:100, copy:true});
+                                idx++;
+                            }
+                        }
+                    }
+                    
+                    // Render (Serial Wait)
+                    el.statusText.innerText = "Encoding GIF frames...";
+                    const renderPromises = encoders.map((enc, i) => new Promise(rEnc => {
+                        enc.on('finished', blob => {
+                            const r=Math.floor(i/cols), c=i%cols;
+                            zipFolder.file(`crop_${r}_${c}.gif`, blob);
+                            rEnc();
+                        });
+                        enc.render();
+                    }));
+                    
+                    await Promise.all(renderPromises);
+                    resolve();
+                });
+            } catch(e) { 
+                console.error("GIF Error", e);
+                resolve(); // Skip broken GIF
+            }
+        });
+    }
+
+    // --- STANDARD UI FUNCTIONS ---
     function updateCalculation(fromDrag) {
         if (!state.isLoaded) return;
-        const cols = parseInt(el.cols.value)||1, rows = parseInt(el.rows.value)||1;
-        let gapX = parseInt(el.gapX.value)||0, gapY = parseInt(el.gapY.value)||0;
+        const cols=parseInt(el.cols.value)||1, rows=parseInt(el.rows.value)||1;
+        let gx=parseInt(el.gapX.value)||0, gy=parseInt(el.gapY.value)||0;
         if (!fromDrag) {
-            state.cellW = Math.floor((state.img.width - (cols-1)*gapX)/cols);
-            state.cellH = Math.floor((state.img.height - (rows-1)*gapY)/rows);
+            state.cellW = Math.floor((state.img.width - (cols-1)*gx)/cols);
+            state.cellH = Math.floor((state.img.height - (rows-1)*gy)/rows);
         } else {
-            if(cols>1) gapX = Math.floor((state.img.width - cols*state.cellW)/(cols-1));
-            if(rows>1) gapY = Math.floor((state.img.height - rows*state.cellH)/(rows-1));
-            gapX = Math.max(0, gapX); gapY = Math.max(0, gapY);
-            el.gapX.value = gapX; el.gapY.value = gapY;
+            if(cols>1) gx = Math.floor((state.img.width - cols*state.cellW)/(cols-1));
+            if(rows>1) gy = Math.floor((state.img.height - rows*state.cellH)/(rows-1));
+            el.gapX.value=Math.max(0,gx); el.gapY.value=Math.max(0,gy);
         }
-        state.cellW = Math.max(1, state.cellW); state.cellH = Math.max(1, state.cellH);
-        drawGridPreview(cols, rows, gapX, gapY);
-        updateSinglePreview(0, 0, gapX, gapY);
+        drawGridPreview(cols, rows, gx, gy);
+        updateSinglePreview(0, 0, gx, gy);
     }
 
-    function drawGridPreview(cols, rows, gapX, gapY) {
+    function drawGridPreview(cols, rows, gx, gy) {
         el.canvas.width = state.img.width; el.canvas.height = state.img.height;
         state.scaleFactor = el.canvas.clientWidth / state.img.width;
         ctx.drawImage(state.img, 0, 0);
         const lw = Math.max(3, state.img.width/300); ctx.lineWidth = lw;
         for (let y=0; y<rows; y++) {
             for (let x=0; x<cols; x++) {
-                const pX = x*(state.cellW+gapX), pY = y*(state.cellH+gapY);
+                const pX = x*(state.cellW+gx), pY = y*(state.cellH+gy);
                 ctx.strokeStyle = '#ff0000'; ctx.strokeRect(pX, pY, state.cellW, state.cellH);
                 if(x===0 && y===0) { ctx.fillStyle='#ffcc00'; const h=lw*4; ctx.fillRect(pX+state.cellW-h, pY+state.cellH-h, h, h); }
             }
         }
     }
 
-    function updateSinglePreview(x, y, gapX, gapY) {
-        const params = getDrawParams();
-        params.srcX = x*(state.cellW+gapX); params.srcY = y*(state.cellH+gapY);
-        el.finalRes.innerText = `${params.targetW} x ${params.targetH}`;
-        const source = (state.isGif && state.superGif) ? state.superGif.get_canvas() : state.img;
-        const pCanvas = document.createElement('canvas');
-        pCanvas.width = params.targetW; pCanvas.height = params.targetH;
-        drawFrameToCanvas(source, pCanvas, params);
-        el.singlePreview.src = pCanvas.toDataURL();
+    function updateSinglePreview(x, y, gx, gy) {
+        const p = getDrawParams(state.img);
+        // Reset scale for single preview context
+        p.rawW = state.cellW; p.rawH = state.cellH; 
+        p.srcX = x*(state.cellW+gx); p.srcY = y*(state.cellH+gy);
+        p.gapX = 0; p.gapY = 0; 
+
+        el.finalRes.innerText = `${p.targetW} x ${p.targetH}`;
+        
+        // If GIF mode, try to get frame 0 from SuperGif if loaded, else img
+        let source = state.img;
+        // Only try to use gif canvas if we are in single mode view and it's loaded
+        if(state.isGif && state.superGif) {
+             // We can't easily get frame 0 without playing, just use static img for preview speed
+        }
+
+        const cvs = document.createElement('canvas'); cvs.width=p.targetW; cvs.height=p.targetH;
+        drawFrameToCanvas(source, cvs, p);
+        el.singlePreview.src = cvs.toDataURL();
     }
 
     function getPos(e) { const r = el.canvas.getBoundingClientRect(); return { x: (e.clientX - r.left)/state.scaleFactor, y: (e.clientY - r.top)/state.scaleFactor }; }

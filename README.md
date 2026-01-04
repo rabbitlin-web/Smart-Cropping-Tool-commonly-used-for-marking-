@@ -123,4 +123,5 @@ If it helps you, please click on a little star~~
 
 **Designed with ❤️ by RabbitLin**
 *如果觉得好用，请在 GitHub 给个 Star！*
-*If you like it, please give us a Star on GitHub\!*
+*If you like it, please give us a Star on GitHub or给我买杯咖啡吧 https://paypal.me/rabbitlin *
+
